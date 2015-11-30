@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns="http://www.springframework.org/schema/security"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+             http://www.springframework.org/schema/beans/spring-beans.xsd
+             http://www.springframework.org/schema/security
+             http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+    <beans:import resource="application-spring.xml"/>
+
+    <http auto-config="true" use-expressions="true">
+        <!-- Login pages -->
+        <form-login login-page="/login" authentication-failure-url="/login-error"/>
+        <logout/>
+        <!-- Security zones -->
+        <intercept-url pattern="/chat/**" access="hasRole('ROLE_USER')"/>
+    </http>
+
+    <authentication-manager>
+        <authentication-provider>
+            <password-encoder hash="bcrypt"/>
+            <jdbc-user-service data-source-ref="dataSource"
+                               users-by-username-query="SELECT username, password, enabled FROM users WHERE username=?"
+                               authorities-by-username-query="SELECT users.username, roles.role as authority
+                                                                FROM authorities
+                                                                INNER JOIN roles ON roles.id = authorities.role_id
+                                                                INNER JOIN users ON users.id = authorities.user_id
+                                                                WHERE users.username=?"/>
+        </authentication-provider>
+    </authentication-manager>
+
+</beans:beans>
