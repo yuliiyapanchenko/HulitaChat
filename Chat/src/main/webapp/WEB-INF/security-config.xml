@@ -14,7 +14,7 @@
         <form-login login-page="/login" authentication-failure-url="/login-error"/>
         <logout/>
         <!-- Security zones -->
-        <intercept-url pattern="/chat/**" access="hasRole('ROLE_USER')"/>
+        <intercept-url pattern="/chat/**" access="hasRole('ROLE_DEVELOPERS') || hasRole('ROLE_USER')"/>
     </http>
 
     <authentication-manager>
@@ -28,6 +28,15 @@
                                                                 INNER JOIN users ON users.id = authorities.user_id
                                                                 WHERE users.username=?"/>
         </authentication-provider>
+        <ldap-authentication-provider
+                user-search-filter="(uid={0})"
+                user-search-base="ou=people"
+                group-search-filter="(uniqueMember={0})"
+                group-search-base="ou=groups"
+                group-role-attribute="cn"
+                role-prefix="ROLE_"/>
     </authentication-manager>
+
+    <ldap-server ldif="classpath:test-server.ldif"/>
 
 </beans:beans>
