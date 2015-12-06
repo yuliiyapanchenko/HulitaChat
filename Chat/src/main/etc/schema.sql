@@ -1,17 +1,24 @@
 USE chat;
 CREATE TABLE users (
   id        INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  username  VARCHAR(50)  NOT NULL,
-  password  VARCHAR(100) NOT NULL,
-  firstname VARCHAR(50)  NOT NULL,
-  lastname  VARCHAR(50)  NOT NULL,
+  email     VARCHAR(100) NOT NULL,
+  password  VARCHAR(255),
+  firstname VARCHAR(100) NOT NULL,
+  lastname  VARCHAR(100) NOT NULL,
   birtdate  DATETIME     NOT NULL,
   enabled   BOOLEAN      NOT NULL
 );
 
+CREATE UNIQUE INDEX users_email_uindex ON chat.users (email);
+
 CREATE TABLE roles (
   id   INT         NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  role VARCHAR(50) NOT NULL
+  role VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE sign_in_providers (
+  id               INT         NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  sign_in_provider VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE authorities (
@@ -22,7 +29,16 @@ CREATE TABLE authorities (
   CONSTRAINT fk_authorities_roles FOREIGN KEY (role_id) REFERENCES roles (id)
 );
 
+CREATE TABLE user_sig_in_provider (
+  id                  INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  user_id             INT NOT NULL UNIQUE,
+  sign_in_provider_id INT NOT NULL,
+  CONSTRAINT fk_user_providers FOREIGN KEY (user_id) REFERENCES users (id),
+  CONSTRAINT fk_providers FOREIGN KEY (sign_in_provider_id) REFERENCES sign_in_providers (id)
+);
+
 CREATE UNIQUE INDEX ix_role_user_id ON authorities (user_id, role_id);
+CREATE UNIQUE INDEX ix_social_provider_user_id ON user_sig_in_provider (user_id, sign_in_provider_id);
 
 CREATE TABLE conversations (
   id        INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -36,7 +52,7 @@ CREATE TABLE conversations (
 );
 
 CREATE TABLE users_conversations (
-  id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  id              INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
   id_user         INT NOT NULL,
   id_conversation INT NOT NULL,
   CONSTRAINT fk_user FOREIGN KEY (id_user) REFERENCES users (id),
@@ -47,7 +63,6 @@ CREATE TABLE messages (
   id              INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
   id_conversation INT          NOT NULL,
   id_user         INT          NOT NULL,
-  msg_time        TIMESTAMP    NOT NULL,
   message         VARCHAR(255) NOT NULL,
   CONSTRAINT fk_originator FOREIGN KEY (id_user) REFERENCES users (id),
   CONSTRAINT fk_message_conversation FOREIGN KEY (id_conversation) REFERENCES conversations (id)

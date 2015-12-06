@@ -11,6 +11,10 @@
        http://www.springframework.org/schema/mvc
        http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
 
+    <import resource="application-persistence.xml"/>
+    <import resource="security-config.xml"/>
+    <import resource="application-social.xml"/>
+
     <mvc:default-servlet-handler/>
     <mvc:annotation-driven>
         <mvc:async-support default-timeout="30000"/>
@@ -20,63 +24,39 @@
     </mvc:annotation-driven>
     <mvc:view-controller path="/" view-name="chat/chat.html"/>
     <mvc:resources mapping="/resources/**" location="resources/"/>
+
     <context:component-scan base-package="com.jpanchenko.chat"/>
+
     <tx:annotation-driven/>
 
     <!-- Thymeleaf template engine -->
     <bean id="templateResolver" class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
-        <property name="prefix" value="/WEB-INF/templates/" />
+        <property name="prefix" value="/WEB-INF/templates/"/>
         <property name="suffix" value=".html"/>
-        <property name="templateMode" value="HTML5" />
-        <property name="characterEncoding" value="UTF-8" />
+        <property name="templateMode" value="HTML5"/>
+        <property name="characterEncoding" value="UTF-8"/>
         <!-- Template cache is true by default. Set to false if you want -->
         <!-- templates to be automatically updated when modified.        -->
-        <property name="cacheable" value="false" />
+        <property name="cacheable" value="false"/>
     </bean>
 
     <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
-        <property name="templateResolver" ref="templateResolver" />
+        <property name="templateResolver" ref="templateResolver"/>
         <property name="additionalDialects">
             <set>
-                <bean class="org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect" />
+                <bean class="org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect"/>
             </set>
         </property>
     </bean>
 
     <bean id="viewResolver" class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
-        <property name="templateEngine" ref="templateEngine" />
-        <property name="characterEncoding" value="UTF-8" />
+        <property name="templateEngine" ref="templateEngine"/>
+        <property name="characterEncoding" value="UTF-8"/>
     </bean>
 
-    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="persistenceUnitName" value="ChatPersistenceUnit"/>
-        <property name="dataSource" ref="dataSource"/>
-        <property name="jpaVendorAdapter" ref="jpaVendorAdapter"/>
-        <property name="jpaProperties">
-            <props>
-                <prop key="hibernate.connection.driver_class">com.mysql.jdbc.Driver</prop>
-                <prop key="hibernate.archive.autodetection">class</prop>
-                <prop key="hibernate.show_sql">true</prop>
-                <prop key="hibernate.format_sql">true</prop>
-                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
-                <prop key="hibernate.hbm2ddl.auto">none</prop>
-            </props>
-        </property>
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basename" value="i18n/messages"/>
+        <property name="useCodeAsDefaultMessage" value="true"/>
     </bean>
 
-    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-        <property name="entityManagerFactory" ref="entityManagerFactory"/>
-    </bean>
-
-    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/chat"/>
-        <property name="username" value="root"/>
-        <property name="password" value="123"/>
-    </bean>
-
-    <bean id="jpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-        <property name="showSql" value="true"/>
-        <property name="databasePlatform" value="org.hibernate.dialect.MySQLDialect"/>
-    </bean>
 </beans>

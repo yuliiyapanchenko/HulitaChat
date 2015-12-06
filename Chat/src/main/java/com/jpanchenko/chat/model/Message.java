@@ -1,21 +1,20 @@
 package com.jpanchenko.chat.model;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 
 /**
  * Created by Julia on 29.11.2015.
  */
 @Entity
 @Table(name = "messages", schema = "chat")
-public class Message {
+public class Message extends BaseEntity {
     private int id;
-    private Timestamp msgTime;
     private String message;
     private Conversation conversation;
     private User user;
 
     @Id
+    @GeneratedValue
     @Column(name = "id")
     public int getId() {
         return id;
@@ -26,17 +25,7 @@ public class Message {
     }
 
     @Basic
-    @Column(name = "msg_time")
-    public Timestamp getMsgTime() {
-        return msgTime;
-    }
-
-    public void setMsgTime(Timestamp msgTime) {
-        this.msgTime = msgTime;
-    }
-
-    @Basic
-    @Column(name = "message")
+    @Column(name = "message", nullable = false)
     public String getMessage() {
         return message;
     }
@@ -46,6 +35,7 @@ public class Message {
     }
 
     @ManyToOne
+    @JoinColumn(name = "id_conversation", referencedColumnName = "id", insertable = false, updatable = false)
     public Conversation getConversation() {
         return conversation;
     }
@@ -55,6 +45,7 @@ public class Message {
     }
 
     @ManyToOne
+    @JoinColumn(name = "id_user", insertable = false, updatable = false, referencedColumnName = "id")
     public User getUser() {
         return user;
     }
@@ -71,7 +62,6 @@ public class Message {
         Message message1 = (Message) o;
 
         if (id != message1.id) return false;
-        if (msgTime != null ? !msgTime.equals(message1.msgTime) : message1.msgTime != null) return false;
         if (message != null ? !message.equals(message1.message) : message1.message != null) return false;
 
         return true;
@@ -80,7 +70,6 @@ public class Message {
     @Override
     public int hashCode() {
         int result = id;
-        result = 31 * result + (msgTime != null ? msgTime.hashCode() : 0);
         result = 31 * result + (message != null ? message.hashCode() : 0);
         return result;
     }

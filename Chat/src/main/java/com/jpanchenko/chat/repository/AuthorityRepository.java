@@ -23,6 +23,7 @@ public class AuthorityRepository {
         entityManager.persist(authority);
     }
 
+    @Transactional
     public List<Authority> getUserAuthority(User user) {
         return entityManager.createQuery("from Authorities where user =:user")
                 .setParameter("user", user)

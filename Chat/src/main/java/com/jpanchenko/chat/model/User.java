@@ -8,17 +8,36 @@ import java.sql.Date;
  */
 @Entity
 @Table(name = "users", schema = "chat")
-public class User {
+public class User extends BaseEntity {
     private int id;
-    private String username;
     private String password;
     private String firstname;
     private String lastname;
     private Date birtdate;
     private boolean enabled;
+    private String email;
+
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+//    private List<Authority> authorities;
+//
+//    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
+//    private List<Conversation> createdConversations;
+//
+//    @OneToMany(mappedBy = "admin", cascade = CascadeType.ALL)
+//    private List<Conversation> adminConversations;
+//
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+//    private List<Message> messages;
+//
+//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+//    private UserSigInProvider socialProviders;
+//
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+//    private List<UsersConversations> conversations;
 
     @Id
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", insertable = false, updatable = false)
     public int getId() {
         return id;
     }
@@ -28,17 +47,7 @@ public class User {
     }
 
     @Basic
-    @Column(name = "username")
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    @Basic
-    @Column(name = "password")
+    @Column(name = "password", length = 255)
     public String getPassword() {
         return password;
     }
@@ -48,7 +57,7 @@ public class User {
     }
 
     @Basic
-    @Column(name = "firstname")
+    @Column(name = "firstname", length = 100, nullable = false)
     public String getFirstname() {
         return firstname;
     }
@@ -58,7 +67,7 @@ public class User {
     }
 
     @Basic
-    @Column(name = "lastname")
+    @Column(name = "lastname", length = 100, nullable = false)
     public String getLastname() {
         return lastname;
     }
@@ -78,13 +87,23 @@ public class User {
     }
 
     @Basic
-    @Column(name = "enabled")
+    @Column(name = "enabled", nullable = false)
     public boolean isEnabled() {
         return enabled;
     }
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    @Basic
+    @Column(name = "email", length = 100, nullable = false, unique = true)
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override
@@ -96,7 +115,6 @@ public class User {
 
         if (id != user.id) return false;
         if (enabled != user.enabled) return false;
-        if (username != null ? !username.equals(user.username) : user.username != null) return false;
         if (password != null ? !password.equals(user.password) : user.password != null) return false;
         if (firstname != null ? !firstname.equals(user.firstname) : user.firstname != null) return false;
         if (lastname != null ? !lastname.equals(user.lastname) : user.lastname != null) return false;
@@ -108,12 +126,53 @@ public class User {
     @Override
     public int hashCode() {
         int result = id;
-        result = 31 * result + (username != null ? username.hashCode() : 0);
         result = 31 * result + (password != null ? password.hashCode() : 0);
         result = 31 * result + (firstname != null ? firstname.hashCode() : 0);
         result = 31 * result + (lastname != null ? lastname.hashCode() : 0);
         result = 31 * result + (birtdate != null ? birtdate.hashCode() : 0);
         result = 31 * result + (enabled ? 1 : 0);
         return result;
+    }
+
+    public static Builder getBuilder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        User user;
+
+        public Builder() {
+            user = new User();
+            user.setEnabled(true);
+        }
+
+        public Builder email(String email) {
+            user.email = email;
+            return this;
+        }
+
+        public Builder firstname(String firstName) {
+            user.firstname = firstName;
+            return this;
+        }
+
+        public Builder lastname(String lastName) {
+            user.lastname = lastName;
+            return this;
+        }
+
+        public Builder password(String password) {
+            user.password = password;
+            return this;
+        }
+
+        public Builder birtdate(Date birtdate) {
+            user.birtdate = birtdate;
+            return this;
+        }
+
+        public User build() {
+            return user;
+        }
     }
 }

@@ -1,20 +1,25 @@
 package com.jpanchenko.chat.model;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created by Julia on 29.11.2015.
  */
 @Entity
 @Table(name = "conversations", schema = "chat")
-public class Conversation {
+public class Conversation extends BaseEntity {
     private int id;
     private String title;
     private Conversation parent;
     private User creator;
     private User admin;
 
+    @OneToMany(mappedBy = "conversation")
+    private List<Message> messages;
+
     @Id
+    @GeneratedValue
     @Column(name = "id")
     public int getId() {
         return id;
@@ -35,6 +40,7 @@ public class Conversation {
     }
 
     @ManyToOne
+    @JoinColumn(name = "parent_id", referencedColumnName = "id", insertable = false, updatable = false)
     public Conversation getParent() {
         return parent;
     }
@@ -44,6 +50,7 @@ public class Conversation {
     }
 
     @ManyToOne
+    @JoinColumn(name = "creator", insertable = false, updatable = false, referencedColumnName = "id")
     public User getCreator() {
         return creator;
     }
@@ -53,6 +60,7 @@ public class Conversation {
     }
 
     @ManyToOne
+    @JoinColumn(name = "admin", insertable = false, updatable = false, referencedColumnName = "id")
     public User getAdmin() {
         return admin;
     }

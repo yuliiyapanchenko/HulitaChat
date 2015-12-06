@@ -7,12 +7,13 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "authorities", schema = "chat")
-public class Authority {
+public class Authority extends BaseEntity {
     private int id;
     private User user;
     private Role role;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     public int getId() {
         return id;
@@ -23,6 +24,7 @@ public class Authority {
     }
 
     @ManyToOne
+    @JoinColumn(name = "user_id", insertable = false, updatable = false, referencedColumnName = "id")
     public User getUser() {
         return user;
     }
@@ -32,6 +34,7 @@ public class Authority {
     }
 
     @ManyToOne
+    @JoinColumn(name = "role_id", referencedColumnName = "id", insertable = false, updatable = false)
     public Role getRole() {
         return role;
     }

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <title>Registration form</title>
+    <script type="text/javascript" th:src="@{resources/js/app/user.form.js}"></script>
+</head>
+<body>
+<div class="page-header">
+    <h1 th:text="#{label.user.registration.page.title}"></h1>
+</div>
+
+<span sec:authorize="isAnonymous()">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <form th:action="@{/user/register}" commandName="user" method="POST" enctype="utf8" role="form">
+                <span th:if="${user.signInProvider.signInProvider != null}">
+                    <hidden path="signInProvider"></hidden>
+                </span>
+
+                <div class="row">
+                    <div id="form-group-firstName" class="form-group col-lg-4">
+                        <label class="control-label" for="user-firstName" th:text="#{label.user.firstName}">:</label>
+                        <input id="user-firstName" th:field="*{user.firstname}" cssClass="form-control"/>
+                        <output typeof="errors" id="error-firstName" th:field="*{user.firstname}"
+                                cssClass="help-block"></output>
+                    </div>
+                </div>
+                <div class="row">
+                    <div id="form-group-lastName" class="form-group col-lg-4">
+                        <label class="control-label" for="user-lastName" th:text="#{label.user.lastName}">:</label>
+                        <input id="user-lastName" th:field="*{user.lastname}" cssClass="form-control"/>
+                        <output typeof="errors" id="error-lastName" th:field="*{user.lastname}"
+                                cssClass="help-block"></output>
+                    </div>
+                </div>
+                <div class="row">
+                    <div id="form-group-email" class="form-group col-lg-4">
+                        <label class="control-label" for="user-email" th:text="#{label.user.email}">:</label>
+                        <input type="email" id="user-email" th:field="*{user.email}" cssClass="form-control"/>
+                        <output typeof="errors" id="error-email" th:field="*{user.email}"
+                                cssClass="help-block"></output>
+                    </div>
+                </div>
+                <span th:if="${user.signInProvider.signInProvider == null}">
+                    <div class="row">
+                        <div id="form-group-password" class="form-group col-lg-4">
+                            <label class="control-label" for="user-password" th:text="#{label.user.password}">:</label>
+                            <input type="password" id="user-password" th:field="*{user.password}"
+                                   cssClass="form-control">
+                            <output typeof="errors" id="error-password" th:field="*{user.password}"
+                                    cssClass="help-block"></output>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="form-group-passwordVerification" class="form-group col-lg-4">
+                            <label class="control-label" for="user-passwordVerification"
+                                   th:text="#{label.user.passwordVerification}">:</label>
+                            <input type="password" id="user-passwordVerification"
+                                   th:field="*{user.passwordVerification}" cssClass="form-control"/>
+                            <output typeof="errors" id="error-passwordVerification"
+                                    th:field="*{user.passwordVerification}" cssClass="help-block"></output>
+                        </div>
+                    </div>
+                </span>
+                <button type="submit" class="btn btn-default"
+                        th:text="#{label.user.registration.submit.button}"></button>
+            </form>
+        </div>
+    </div>
+</span>
+
+<span sec:authorize="isAuthenticated()">
+    <p th:text="#{text.registration.page.authenticated.user.help}"></p>
+</span>
+</body>
+</html>

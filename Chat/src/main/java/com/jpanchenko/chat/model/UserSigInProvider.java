@@ -3,14 +3,14 @@ package com.jpanchenko.chat.model;
 import javax.persistence.*;
 
 /**
- * Created by Julia on 29.11.2015.
+ * Created by Julia on 04.12.2015.
  */
 @Entity
-@Table(name = "users_conversations", schema = "chat")
-public class UsersConversations extends BaseEntity {
+@Table(name = "user_sig_in_provider", schema = "chat")
+public class UserSigInProvider extends BaseEntity {
     private int id;
     private User user;
-    private Conversation conversation;
+    private SocialMediaService socialMediaService;
 
     @Id
     @GeneratedValue
@@ -23,8 +23,8 @@ public class UsersConversations extends BaseEntity {
         this.id = id;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "id_user", referencedColumnName = "id", insertable = false, updatable = false)
+    @OneToOne
+    @JoinColumn(name = "user_id", insertable = false, updatable = false, referencedColumnName = "id")
     public User getUser() {
         return user;
     }
@@ -34,13 +34,13 @@ public class UsersConversations extends BaseEntity {
     }
 
     @ManyToOne
-    @JoinColumn(name = "id_conversation", referencedColumnName = "id", insertable = false, updatable = false)
-    public Conversation getConversation() {
-        return conversation;
+    @JoinColumn(name = "sign_in_provider_id", referencedColumnName = "id", insertable = false, updatable = false)
+    public SocialMediaService getSocialMediaService() {
+        return socialMediaService;
     }
 
-    public void setConversation(Conversation conversation) {
-        this.conversation = conversation;
+    public void setSocialMediaService(SocialMediaService socialMediaService) {
+        this.socialMediaService = socialMediaService;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class UsersConversations extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        UsersConversations that = (UsersConversations) o;
+        UserSigInProvider that = (UserSigInProvider) o;
 
         if (id != that.id) return false;
 

@@ -4,7 +4,6 @@ import com.jpanchenko.chat.model.Authority;
 import com.jpanchenko.chat.model.Role;
 import com.jpanchenko.chat.model.User;
 import com.jpanchenko.chat.repository.AuthorityRepository;
-import com.jpanchenko.chat.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,16 +15,17 @@ import java.util.List;
 @Service
 public class AuthorityService {
 
+    public static final String ROLE_USER = "ROLE_USER";
     @Autowired
     AuthorityRepository authorityRepository;
 
     @Autowired
-    private RoleRepository roleRepository;
+    private RoleService roleService;
 
     public void addUserAuthority(User dbUser) {
         Authority authority = new Authority();
         authority.setUser(dbUser);
-        Role role = roleRepository.getRoleByName("ROLE_USER");
+        Role role = roleService.getRoleByName(ROLE_USER);
         authority.setRole(role);
         authorityRepository.addAuthority(authority);
     }

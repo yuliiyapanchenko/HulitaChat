@@ -26,23 +26,15 @@ public class UserRepository {
     }
 
     @Transactional
-    public void addUser(User user) {
-        List dbUser = entityManager.createQuery("from User where username = :username")
-                .setParameter("username", user.getUsername())
-                .getResultList();
-        if (dbUser == null || dbUser.isEmpty())
-            entityManager.persist(user);
-    }
-
-    @Transactional
-    public User getUserById(Integer userId) {
-        return entityManager.find(User.class, userId);
-    }
-
-    @Transactional
-    public User getUserByUsername(String username) {
-        return (User) entityManager.createQuery("from User where username = :username")
-                .setParameter("username", username)
+    public User getUserByEmail(String email) {
+        return (User) entityManager.createQuery("from User where email = :email")
+                .setParameter("email", email)
                 .getSingleResult();
+    }
+
+    @Transactional
+    public User addUser(User user) {
+        entityManager.persist(user);
+        return getUserByEmail(user.getEmail());
     }
 }

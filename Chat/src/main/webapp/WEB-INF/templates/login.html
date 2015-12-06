@@ -1,19 +1,89 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <title>Login page</title>
+    <link rel="stylesheet" type="text/css" th:href="@{resources/css/social-buttons-3.css}"/>
 </head>
 <body>
-<h1>Login page</h1>
+<div class="page-header">
+    <h1 th:text="#{label.user.login.page.title}"></h1>
+</div>
 
-<p th:if="${loginError}">Wrong user or password</p>
 
-<form th:action="@{/j_spring_security_check}" method="post">
+<span sec:authorize="isAnonymous()">
+<div class="panel panel-default">
+    <div class="panel-body">
+        <h2 th:text="#{label.login.form.title}"></h2>
+
+        <div th:if="${loginError}" class="alert alert-danger alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true"
+                    th:text="#{text.login.page.login.failed.error}">&times;</button>
+        </div>
+
+        <form th:action="@{/j_spring_security_check}" method="POST" role="form">
+
+            <div class="row">
+                <div id="form-group-email" class="form-group col-lg-4">
+                    <label class="control-label" for="j_username" th:text="#{label.user.email}">:</label>
+                    <input id="j_username" name="j_username" type="text" class="form-control"/>
+                </div>
+            </div>
+
+            <div class="row">
+                <div id="form-group-password" class="form-group col-lg-4">
+                    <label class="control-label" for="j_password" th:text="#{label.user.password}">:</label>
+                    <input id="j_password" name="j_password" type="password" class="form-control"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-lg-4">
+                    <button type="submit" class="btn btn-default" th:text="#{label.user.login.submit.button}"></button>
+                </div>
+            </div>
+        </form>
+        <div class="row">
+            <div class="form-group col-lg-4">
+                <a href="@{/user/register}" th:text="#{label.navigation.registration.link}"></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <h2 th:text="#{label.social.sign.in.title}"></h2>
+
+        <div class="row social-button-row">
+            <div class="col-lg-4">
+                <a href="@{/auth/facebook}">
+                    <button class="btn btn-facebook"><i class="icon-facebook"></i> | <span
+                            th:text="#{label.facebook.sign.in.button}"></span></button>
+                </a>
+            </div>
+        </div>
+        <div class="row social-button-row">
+            <div class="col-lg-4">
+                <a href="@{/auth/twitter}">
+                    <button class="btn btn-twitter"><i class="icon-twitter"></i> | <span
+                            th:text="#{label.twitter.sign.in.button}"></span></button>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</span>
+
+<span sec:authorize="isAuthenticated()">
+    <p th:text="#{text.login.page.authenticated.user.help}"/></p>
+</span>
+
+<!--<form th:action="@{/j_spring_security_check}" method="post">
     <label for="j_username">Username</label>:
     <input type="text" id="j_username" name="j_username" autofocus="autofocus"/> <br/>
     <label for="j_password">Password</label>:
     <input type="password" id="j_password" name="j_password"/> <br/>
     <input type="submit" value="Log in"/>
-</form>
+</form> -->
 </body>
 </html>

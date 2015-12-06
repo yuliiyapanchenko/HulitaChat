@@ -7,11 +7,12 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "roles", schema = "chat")
-public class Role {
+public class Role extends BaseEntity {
     private int id;
     private String role;
 
     @Id
+    @GeneratedValue
     @Column(name = "id")
     public int getId() {
         return id;
@@ -22,7 +23,7 @@ public class Role {
     }
 
     @Basic
-    @Column(name = "role")
+    @Column(name = "role", length = 100, nullable = false)
     public String getRole() {
         return role;
     }
