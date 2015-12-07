@@ -44,7 +44,7 @@
         </form>
         <div class="row">
             <div class="form-group col-lg-4">
-                <a href="@{/user/register}" th:text="#{label.navigation.registration.link}"></a>
+                <a th:href="@{/user/register}" th:text="#{label.navigation.registration.link}"></a>
             </div>
         </div>
     </div>
@@ -56,7 +56,7 @@
 
         <div class="row social-button-row">
             <div class="col-lg-4">
-                <a href="@{/auth/facebook}">
+                <a th:href="@{/auth/facebook}">
                     <button class="btn btn-facebook"><i class="icon-facebook"></i> | <span
                             th:text="#{label.facebook.sign.in.button}"></span></button>
                 </a>
@@ -64,7 +64,7 @@
         </div>
         <div class="row social-button-row">
             <div class="col-lg-4">
-                <a href="@{/auth/twitter}">
+                <a th:href="@{/auth/twitter}">
                     <button class="btn btn-twitter"><i class="icon-twitter"></i> | <span
                             th:text="#{label.twitter.sign.in.button}"></span></button>
                 </a>
@@ -75,7 +75,7 @@
 </span>
 
 <span sec:authorize="isAuthenticated()">
-    <p th:text="#{text.login.page.authenticated.user.help}"/></p>
+    <p th:text="#{text.login.page.authenticated.user.help}"></p>
 </span>
 
 <!--<form th:action="@{/j_spring_security_check}" method="post">

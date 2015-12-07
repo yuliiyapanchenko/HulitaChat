@@ -1,24 +1,22 @@
 USE chat;
 CREATE TABLE users (
   id        INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  email     VARCHAR(100) NOT NULL,
+  email     VARCHAR(100) NOT NULL UNIQUE,
   password  VARCHAR(255),
   firstname VARCHAR(100) NOT NULL,
   lastname  VARCHAR(100) NOT NULL,
-  birtdate  DATETIME     NOT NULL,
+  birtdate  DATE,
   enabled   BOOLEAN      NOT NULL
 );
 
-CREATE UNIQUE INDEX users_email_uindex ON chat.users (email);
-
 CREATE TABLE roles (
-  id   INT         NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  role VARCHAR(100) NOT NULL
+  id   INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  role VARCHAR(100) NOT NULL UNIQUE
 );
 
 CREATE TABLE sign_in_providers (
-  id               INT         NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  sign_in_provider VARCHAR(100) NOT NULL
+  id               INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  sign_in_provider VARCHAR(100) NOT NULL UNIQUE
 );
 
 CREATE TABLE authorities (

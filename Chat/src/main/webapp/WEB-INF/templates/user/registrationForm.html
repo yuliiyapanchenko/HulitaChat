@@ -14,7 +14,7 @@
     <div class="panel panel-default">
         <div class="panel-body">
             <form th:action="@{/user/register}" commandName="user" method="POST" enctype="utf8" role="form">
-                <span th:if="${user.signInProvider.signInProvider != null}">
+                <span th:if="${user.signInProvider != null}">
                     <hidden path="signInProvider"></hidden>
                 </span>
 
@@ -42,12 +42,12 @@
                                 cssClass="help-block"></output>
                     </div>
                 </div>
-                <span th:if="${user.signInProvider.signInProvider == null}">
+                <span th:if="${user.signInProvider == null}">
                     <div class="row">
                         <div id="form-group-password" class="form-group col-lg-4">
                             <label class="control-label" for="user-password" th:text="#{label.user.password}">:</label>
                             <input type="password" id="user-password" th:field="*{user.password}"
-                                   cssClass="form-control">
+                                   cssClass="form-control"/>
                             <output typeof="errors" id="error-password" th:field="*{user.password}"
                                     cssClass="help-block"></output>
                         </div>

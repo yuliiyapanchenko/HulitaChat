@@ -9,9 +9,7 @@ import com.jpanchenko.chat.service.UserService;
 import com.jpanchenko.chat.service.UserSignInProviderService;
 import com.jpanchenko.chat.utils.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.social.connect.Connection;
-import org.springframework.social.connect.ConnectionKey;
-import org.springframework.social.connect.UserProfile;
+import org.springframework.social.connect.*;
 import org.springframework.social.connect.web.ProviderSignInUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.context.request.WebRequest;
 
+import javax.inject.Inject;
 import javax.validation.Valid;
 
 /**
@@ -43,9 +42,17 @@ public class RegistrationController {
     @Autowired
     private UserSignInProviderService userSignInProviderService;
 
+    private ProviderSignInUtils providerSignInUtils;
+
+    @Inject
+    public RegistrationController(ConnectionFactoryLocator connectionFactoryLocator,
+                            UsersConnectionRepository connectionRepository) {
+        this.providerSignInUtils = new ProviderSignInUtils(connectionFactoryLocator, connectionRepository);
+    }
+
     @RequestMapping(value = USER_REGISTER, method = RequestMethod.GET)
     public String showRegistrationForm(WebRequest request, Model model) {
-        Connection<?> connection = new ProviderSignInUtils().getConnectionFromSession(request);
+        Connection<?> connection = providerSignInUtils.getConnectionFromSession(request);
         RegistrationForm registrationForm = createRegistrationForm(connection);
         model.addAttribute("user", registrationForm);
         return USER_REGISTRATION_FORM;
@@ -63,7 +70,7 @@ public class RegistrationController {
             return USER_REGISTRATION_FORM;
         }
         SecurityUtil.logInUser(user, authorityService.getUserAuthority(user), userSignInProviderService.getUserSignInProvider(user));
-        new ProviderSignInUtils().doPostSignUp(user.getEmail(), request);
+        providerSignInUtils.doPostSignUp(user.getEmail(), request);
         return "redirect:/";
     }
 

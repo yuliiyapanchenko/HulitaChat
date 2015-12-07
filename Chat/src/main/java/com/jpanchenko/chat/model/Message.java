@@ -34,7 +34,7 @@ public class Message extends BaseEntity {
         this.message = message;
     }
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_conversation", referencedColumnName = "id", insertable = false, updatable = false)
     public Conversation getConversation() {
         return conversation;
@@ -44,7 +44,7 @@ public class Message extends BaseEntity {
         this.conversation = conversation;
     }
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_user", insertable = false, updatable = false, referencedColumnName = "id")
     public User getUser() {
         return user;

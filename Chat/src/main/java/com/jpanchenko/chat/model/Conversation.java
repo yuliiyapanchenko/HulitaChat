@@ -15,9 +15,6 @@ public class Conversation extends BaseEntity {
     private User creator;
     private User admin;
 
-    @OneToMany(mappedBy = "conversation")
-    private List<Message> messages;
-
     @Id
     @GeneratedValue
     @Column(name = "id")
@@ -39,7 +36,7 @@ public class Conversation extends BaseEntity {
         this.title = title;
     }
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "parent_id", referencedColumnName = "id", insertable = false, updatable = false)
     public Conversation getParent() {
         return parent;
@@ -49,7 +46,7 @@ public class Conversation extends BaseEntity {
         this.parent = parent;
     }
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "creator", insertable = false, updatable = false, referencedColumnName = "id")
     public User getCreator() {
         return creator;
@@ -59,7 +56,7 @@ public class Conversation extends BaseEntity {
         this.creator = creator;
     }
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "admin", insertable = false, updatable = false, referencedColumnName = "id")
     public User getAdmin() {
         return admin;

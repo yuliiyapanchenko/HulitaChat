@@ -12,7 +12,6 @@
        http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
 
     <import resource="application-persistence.xml"/>
-    <import resource="security-config.xml"/>
     <import resource="application-social.xml"/>
 
     <mvc:default-servlet-handler/>
@@ -44,7 +43,7 @@
         <property name="templateResolver" ref="templateResolver"/>
         <property name="additionalDialects">
             <set>
-                <bean class="org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect"/>
+                <bean class="org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect"/>
             </set>
         </property>
     </bean>

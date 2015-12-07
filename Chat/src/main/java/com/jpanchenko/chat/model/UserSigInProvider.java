@@ -23,8 +23,8 @@ public class UserSigInProvider extends BaseEntity {
         this.id = id;
     }
 
-    @OneToOne
-    @JoinColumn(name = "user_id", insertable = false, updatable = false, referencedColumnName = "id")
+    @OneToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false, referencedColumnName = "id", unique = true)
     public User getUser() {
         return user;
     }
@@ -33,7 +33,7 @@ public class UserSigInProvider extends BaseEntity {
         this.user = user;
     }
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "sign_in_provider_id", referencedColumnName = "id", insertable = false, updatable = false)
     public SocialMediaService getSocialMediaService() {
         return socialMediaService;

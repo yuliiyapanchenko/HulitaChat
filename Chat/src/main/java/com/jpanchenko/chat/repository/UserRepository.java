@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.List;
@@ -27,9 +28,13 @@ public class UserRepository {
 
     @Transactional
     public User getUserByEmail(String email) {
-        return (User) entityManager.createQuery("from User where email = :email")
-                .setParameter("email", email)
-                .getSingleResult();
+        try {
+            return (User) entityManager.createQuery("from User where email = :email")
+                    .setParameter("email", email)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+        }
+        return null;
     }
 
     @Transactional

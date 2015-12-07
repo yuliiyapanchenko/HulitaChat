@@ -23,8 +23,8 @@ public class Authority extends BaseEntity {
         this.id = id;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", insertable = false, updatable = false, referencedColumnName = "id")
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     public User getUser() {
         return user;
     }
@@ -33,8 +33,8 @@ public class Authority extends BaseEntity {
         this.user = user;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "role_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
     public Role getRole() {
         return role;
     }

@@ -25,7 +25,7 @@ public class AuthorityRepository {
 
     @Transactional
     public List<Authority> getUserAuthority(User user) {
-        return entityManager.createQuery("from Authorities where user =:user")
+        return entityManager.createQuery("from Authority where user =:user")
                 .setParameter("user", user)
                 .getResultList();
     }

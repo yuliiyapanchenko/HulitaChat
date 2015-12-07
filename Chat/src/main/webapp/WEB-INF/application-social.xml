@@ -2,15 +2,19 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:facebook="http://www.springframework.org/schema/social/facebook"
        xmlns:twitter="http://www.springframework.org/schema/social/twitter"
        xmlns:social="http://www.springframework.org/schema/social"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd   http://www.springframework.org/schema/social/twitter http://www.springframework.org/schema/social/spring-social-twitter.xsd">
+       xmlns:facebook="http://www.springframework.org/schema/social/facebook"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+       http://www.springframework.org/schema/social http://www.springframework.org/schema/social/spring-social.xsd
+       http://www.springframework.org/schema/social/twitter http://www.springframework.org/schema/social/spring-social-twitter.xsd
+       http://www.springframework.org/schema/social/facebook http://www.springframework.org/schema/social/spring-social-facebook.xsd">
 
     <context:property-placeholder location="classpath:application.properties"/>
 
-    <facebook:config app-id="${facebook.app.id}" app-secret="${facebook.app.secret}"/>
-    <twitter:config app-id="${twitter.app.id}" app-secret="${twitter.app.secret}"/>
+    <facebook:config app-id="558461227637252" app-secret="d995f77616c37d6547cdf13290089411"/>
+    <!--<twitter:config app-id="${twitter.app.id}" app-secret="${twitter.app.secret}"/>-->
 
     <social:jdbc-connection-repository data-source-ref="dataSource"/>
 

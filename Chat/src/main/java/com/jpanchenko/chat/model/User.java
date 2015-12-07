@@ -17,24 +17,6 @@ public class User extends BaseEntity {
     private boolean enabled;
     private String email;
 
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-//    private List<Authority> authorities;
-//
-//    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
-//    private List<Conversation> createdConversations;
-//
-//    @OneToMany(mappedBy = "admin", cascade = CascadeType.ALL)
-//    private List<Conversation> adminConversations;
-//
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-//    private List<Message> messages;
-//
-//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-//    private UserSigInProvider socialProviders;
-//
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-//    private List<UsersConversations> conversations;
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", insertable = false, updatable = false)
@@ -87,7 +69,7 @@ public class User extends BaseEntity {
     }
 
     @Basic
-    @Column(name = "enabled", nullable = false)
+    @Column(name = "enabled", nullable = false, columnDefinition = "BIT")
     public boolean isEnabled() {
         return enabled;
     }
