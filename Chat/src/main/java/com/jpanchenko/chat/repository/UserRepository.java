@@ -33,8 +33,8 @@ public class UserRepository {
                     .setParameter("email", email)
                     .getSingleResult();
         } catch (NoResultException ex) {
+            return null;
         }
-        return null;
     }
 
     @Transactional

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 /**
@@ -20,9 +21,13 @@ public class UserSignInProviderRepository {
 
     @Transactional
     public UserSigInProvider getUserSignInProvider(User user) {
-        return (UserSigInProvider) entityManager.createQuery("from UserSigInProvider where user =:user")
-                .setParameter("user", user)
-                .getSingleResult();
+        try {
+            return (UserSigInProvider) entityManager.createQuery("from UserSigInProvider where user =:user")
+                    .setParameter("user", user)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+            return null;
+        }
     }
 
     @Transactional
