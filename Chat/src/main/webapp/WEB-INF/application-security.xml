@@ -17,11 +17,12 @@
         <form-login login-page="/login" authentication-failure-url="/login-error"
                     login-processing-url="/j_spring_security_check" username-parameter="j_username"
                     password-parameter="j_password"/>
-        <logout logout-url="/j_spring_security_logout" delete-cookies="JESSIONID"/>
+        <logout logout-success-url="/" logout-url="/j_spring_security_logout" />
 
         <!-- Anyone can access these urls -->
         <intercept-url pattern="/auth/**" access="permitAll()"/>
         <intercept-url pattern="/login" access="permitAll()"/>
+        <intercept-url pattern="/j_spring_security_logout" access="permitAll()"/>
         <intercept-url pattern="/login-error" access="permitAll()"/>
         <intercept-url pattern="/signin/**" access="permitAll()"/>
         <intercept-url pattern="/signup/**" access="permitAll()"/>
@@ -32,14 +33,11 @@
 
         <custom-filter ref="socialAuthenticationFilter" before="PRE_AUTH_FILTER"/>
 
+        <!--<csrf disabled="true"/>-->
+
     </http>
 
     <authentication-manager alias="authenticationManager">
-
-        <!-- Social sign -->
-        <!--<authentication-provider user-service-ref="userService">-->
-        <!--<password-encoder hash="bcrypt"/>-->
-        <!--</authentication-provider> -->
 
         <authentication-provider ref="socialAuthenticationProvider"/>
 

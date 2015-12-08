@@ -19,7 +19,7 @@ public class SocialMediaServiceRepository {
 
     @Transactional
     public SocialMediaService getSocialMediaService(String provider) {
-        return (SocialMediaService) entityManager.createQuery("from SocialMediaService where signInProvider =: provider")
+        return (SocialMediaService) entityManager.createQuery("from SocialMediaService where signInProvider =:provider")
                 .setParameter("provider", provider)
                 .getSingleResult();
     }

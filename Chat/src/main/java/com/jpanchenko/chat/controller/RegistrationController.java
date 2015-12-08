@@ -61,12 +61,13 @@ public class RegistrationController {
     @RequestMapping(value = USER_REGISTER, method = RequestMethod.POST)
     public String registerUserAccount(@Valid @ModelAttribute("user") RegistrationForm form,
                                       BindingResult result,
-                                      WebRequest request) {
+                                      WebRequest request, Model model) {
         if (result.hasErrors()) {
             return USER_REGISTRATION_FORM;
         }
         User user = createUserAccount(form, result);
         if (user == null) {
+            model.addAttribute("error", true);
             return USER_REGISTRATION_FORM;
         }
         SecurityUtil.logInUser(user, authorityService.getUserAuthority(user), userSignInProviderService.getUserSignInProvider(user));

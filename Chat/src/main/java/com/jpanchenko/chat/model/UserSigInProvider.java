@@ -24,7 +24,7 @@ public class UserSigInProvider extends BaseEntity {
     }
 
     @OneToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false, referencedColumnName = "id", unique = true)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true)
     public User getUser() {
         return user;
     }
@@ -34,7 +34,7 @@ public class UserSigInProvider extends BaseEntity {
     }
 
     @ManyToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "sign_in_provider_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "sign_in_provider_id", referencedColumnName = "id")
     public SocialMediaService getSocialMediaService() {
         return socialMediaService;
     }

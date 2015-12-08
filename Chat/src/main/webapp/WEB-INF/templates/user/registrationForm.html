@@ -11,6 +11,10 @@
 </div>
 
 <span sec:authorize="isAnonymous()">
+    <div th:if="${error}" >
+        <h2 style="color: red" th:text="#{NotExist.user.email}"></h2>
+    </div>
+
     <div class="panel panel-default">
         <div class="panel-body">
             <form th:action="@{/user/register}" commandName="user" method="POST" enctype="utf8" role="form">

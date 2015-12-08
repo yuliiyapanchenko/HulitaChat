@@ -37,7 +37,7 @@ public class Conversation extends BaseEntity {
     }
 
     @ManyToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "parent_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "parent_id", referencedColumnName = "id")
     public Conversation getParent() {
         return parent;
     }
@@ -47,7 +47,7 @@ public class Conversation extends BaseEntity {
     }
 
     @ManyToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "creator", insertable = false, updatable = false, referencedColumnName = "id")
+    @JoinColumn(name = "creator", referencedColumnName = "id")
     public User getCreator() {
         return creator;
     }
@@ -57,7 +57,7 @@ public class Conversation extends BaseEntity {
     }
 
     @ManyToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "admin", insertable = false, updatable = false, referencedColumnName = "id")
+    @JoinColumn(name = "admin", referencedColumnName = "id")
     public User getAdmin() {
         return admin;
     }

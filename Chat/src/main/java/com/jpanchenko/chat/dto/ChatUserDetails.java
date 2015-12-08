@@ -114,7 +114,7 @@ public class ChatUserDetails extends SocialUser {
         }
 
         public Builder socialSignInProvider(UserSigInProvider socialSignInProvider) {
-            this.socialSignInProvider = socialSignInProvider.getSocialMediaService();
+            this.socialSignInProvider = socialSignInProvider == null ? null : socialSignInProvider.getSocialMediaService();
             return this;
         }
 

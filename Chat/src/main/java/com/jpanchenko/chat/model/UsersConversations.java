@@ -24,7 +24,7 @@ public class UsersConversations extends BaseEntity {
     }
 
     @ManyToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "id_user", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "id_user", referencedColumnName = "id")
     public User getUser() {
         return user;
     }
@@ -34,7 +34,7 @@ public class UsersConversations extends BaseEntity {
     }
 
     @ManyToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "id_conversation", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "id_conversation", referencedColumnName = "id")
     public Conversation getConversation() {
         return conversation;
     }

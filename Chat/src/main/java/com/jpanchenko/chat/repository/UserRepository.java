@@ -29,7 +29,7 @@ public class UserRepository {
     @Transactional
     public User getUserByEmail(String email) {
         try {
-            return (User) entityManager.createQuery("from User where email = :email")
+            return (User) entityManager.createQuery("from User where email =:email")
                     .setParameter("email", email)
                     .getSingleResult();
         } catch (NoResultException ex) {
