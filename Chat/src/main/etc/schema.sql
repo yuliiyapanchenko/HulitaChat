@@ -7,7 +7,7 @@ CREATE TABLE users (
   lastname  VARCHAR(100) NOT NULL,
   birtdate  DATE,
   enabled   BOOLEAN      NOT NULL
-);
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE roles (
   id   INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
