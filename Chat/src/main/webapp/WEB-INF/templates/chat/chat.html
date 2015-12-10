@@ -4,17 +4,24 @@
 <head>
     <title>Chat</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/resources/css/social-buttons-3.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/resources/css/font-awesome.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/resources/css/bootstrap.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/resources/css/bootstrap-theme.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/resources/css/style.css}"/>
 </head>
 <body>
 
-<div th:substituteby="index::logout"></div>
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div th:substituteby="index::logout"></div>
+    </div>
+</div>
 
 <h1>Chat</h1>
 
 <form id="joinChatForm" th:action="@{/mvc/chat}" data-bind="visible: activePollingXhr() == null">
     <p>
-        <label for="user">User: </label>
-        <input id="user" name="user" type="text" data-bind="value: userName"/>
         <input name="messageIndex" type="hidden" data-bind="value: messageIndex"/>
         <button id="start" type="submit" data-bind="click: joinChat">Join Chat</button>
     </p>
@@ -22,7 +29,6 @@
 
 <form id="leaveChatForm" th:action="@{/mvc/chat}" data-bind="visible: activePollingXhr() != null">
     <p>
-        You're chatting as <strong data-bind="text: userName"></strong>
         <button id="leave" type="submit" data-bind="click: leaveChat">Leave Chat</button>
     </p>
 </form>

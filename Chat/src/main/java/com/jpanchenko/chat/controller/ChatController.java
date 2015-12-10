@@ -1,7 +1,10 @@
 package com.jpanchenko.chat.controller;
 
+import com.jpanchenko.chat.dto.ChatUserDetails;
 import com.jpanchenko.chat.repository.ChatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +26,7 @@ public class ChatController {
     private final ChatRepository chatRepository;
 
     private final Map<DeferredResult<List<String>>, Integer> chatRequests =
-            new ConcurrentHashMap<DeferredResult<List<String>>, Integer>();
+            new ConcurrentHashMap<>();
 
     @Autowired
     public ChatController(ChatRepository chatRepository) {
@@ -34,7 +37,7 @@ public class ChatController {
     @ResponseBody
     public DeferredResult<List<String>> getMessages(@RequestParam int messageIndex) {
 
-        final DeferredResult<List<String>> deferredResult = new DeferredResult<List<String>>(null, Collections.emptyList());
+        final DeferredResult<List<String>> deferredResult = new DeferredResult<>(null, Collections.emptyList());
         this.chatRequests.put(deferredResult, messageIndex);
 
         deferredResult.onCompletion(new Runnable() {
@@ -55,7 +58,8 @@ public class ChatController {
     @RequestMapping(method=RequestMethod.POST)
     @ResponseBody
     public void postMessage(@RequestParam String message) {
-
+        String userName = getCurrentUsername();
+        message = "[" + userName + "] " + message;
         this.chatRepository.addMessage(message);
 
         // Update all chat requests as part of the POST request
@@ -65,6 +69,12 @@ public class ChatController {
             List<String> messages = this.chatRepository.getMessages(entry.getValue());
             entry.getKey().setResult(messages);
         }
+    }
+
+    private String getCurrentUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        ChatUserDetails principal = (ChatUserDetails) authentication.getPrincipal();
+        return principal.getFirstname() + " " + principal.getLastname();
     }
 
 }
