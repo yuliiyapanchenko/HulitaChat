@@ -1,37 +1,107 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Chat</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <link rel="icon" href="../../favicon.ico"/>
     <link rel="stylesheet" type="text/css" th:href="@{/resources/css/social-buttons-3.css}"/>
     <link rel="stylesheet" type="text/css" th:href="@{/resources/css/font-awesome.css}"/>
     <link rel="stylesheet" type="text/css" th:href="@{/resources/css/bootstrap.css}"/>
     <link rel="stylesheet" type="text/css" th:href="@{/resources/css/bootstrap-theme.css}"/>
     <link rel="stylesheet" type="text/css" th:href="@{/resources/css/style.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/resources/css/navbar-fixed-top.css}"/>
 </head>
 <body>
 
-<div class="panel panel-default">
-    <div class="panel-body">
-        <div th:substituteby="index::logout"></div>
+<!-- Fixed navbar -->
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Chat</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">Public chat<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <form class="navbar-form" id="joinChatForm" th:action="@{/mvc/chat}"
+                              data-bind="visible: activePollingXhr() == null">
+                            <input name="messageIndex" type="hidden" data-bind="value: messageIndex"/>
+                            <li>
+                                <a href="#" type="submit" data-bind="click: joinChat">Join</a>
+                            </li>
+                        </form>
+                        <form class="navbar-form" id="leaveChatForm" th:action="@{/mvc/chat}"
+                              data-bind="visible: activePollingXhr() != null">
+                            <li>
+                                <a href="#" type="submit" data-bind="click: leaveChat">Leave</a>
+                            </li>
+                        </form>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">Private chat<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Create</a></li>
+                        <li><a href="#">Rename</a></li>
+                        <li><a href="#">Delete</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">Add people</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">Leave</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">Contacts<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Add contact</a></li>
+                        <li><a href="#">My contacts</a></li>
+                    </ul>
+                </li>
+
+                <li th:substituteby="index::logout"></li>
+
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
     </div>
-</div>
+</nav>
+
+<!--<div class="panel panel-default">-->
+    <!--<div class="panel-body">-->
+        <!--<div th:substituteby="index::logout"></div>-->
+    <!--</div>-->
+<!--</div>-->
 
 <h1>Chat</h1>
 
-<form id="joinChatForm" th:action="@{/mvc/chat}" data-bind="visible: activePollingXhr() == null">
-    <p>
-        <input name="messageIndex" type="hidden" data-bind="value: messageIndex"/>
-        <button id="start" type="submit" data-bind="click: joinChat">Join Chat</button>
-    </p>
-</form>
+<!--<form id="joinChatForm" th:action="@{/mvc/chat}" data-bind="visible: activePollingXhr() == null">-->
+<!--<p>-->
+<!--<input name="messageIndex" type="hidden" data-bind="value: messageIndex"/>-->
+<!--<button id="start" type="submit" data-bind="click: joinChat">Join Chat</button>-->
+<!--</p>-->
+<!--</form>-->
 
-<form id="leaveChatForm" th:action="@{/mvc/chat}" data-bind="visible: activePollingXhr() != null">
-    <p>
-        <button id="leave" type="submit" data-bind="click: leaveChat">Leave Chat</button>
-    </p>
-</form>
+<!--<form id="leaveChatForm" th:action="@{/mvc/chat}" data-bind="visible: activePollingXhr() != null">-->
+<!--<p>-->
+<!--<button id="leave" type="submit" data-bind="click: leaveChat">Leave Chat</button>-->
+<!--</p>-->
+<!--</form>-->
 
 <div data-bind="visible: activePollingXhr() != null">
     <textarea rows="15" cols="60" readonly="readonly" data-bind="text: chatContent"></textarea>
@@ -44,10 +114,12 @@
     </p>
 </form>
 </body>
-<script type="text/javascript" src="../../../resources/js/vendor/jquery-1.7.2.min.js"
-        th:src="@{/resources/js/vendor/jquery-1.7.2.min.js}"></script>
+<script type="text/javascript" src="../../../resources/js/vendor/jquery-1.11.3.min.js"
+        th:src="@{/resources/js/vendor/jquery-1.11.3.min.js}"></script>
 <script type="text/javascript" src="../../../resources/js/vendor/knockout-2.0.0.js"
         th:src="@{/resources/js/vendor/knockout-2.0.0.js}"></script>
 <script type="text/javascript" src="../../../resources/js/app/chat.js" th:src="@{/resources/js/app/chat.js}"></script>
+<script type="text/javascript" src="../../../resources/js/vendor/bootstrap.min.js"
+        th:src="@{/resources/js/vendor/bootstrap.min.js}"></script>
 
 </html>

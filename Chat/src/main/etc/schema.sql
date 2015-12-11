@@ -7,7 +7,8 @@ CREATE TABLE users (
   lastname  VARCHAR(100) NOT NULL,
   birtdate  DATE,
   enabled   BOOLEAN      NOT NULL
-) DEFAULT CHARSET=utf8;
+)
+  DEFAULT CHARSET = utf8;
 
 CREATE TABLE roles (
   id   INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -66,17 +67,27 @@ CREATE TABLE messages (
   CONSTRAINT fk_message_conversation FOREIGN KEY (id_conversation) REFERENCES conversations (id)
 );
 
+CREATE TABLE contacts (
+  id         INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  id_user    INT NOT NULL,
+  id_contact INT NOT NULL,
+  CONSTRAINT fk_contacts_user FOREIGN KEY (id_user) REFERENCES users (id),
+  CONSTRAINT fk_contacts_contact FOREIGN KEY (id_contact) REFERENCES users (id)
+);
 
-create table UserConnection (userId varchar(255) not null,
-                             providerId varchar(255) not null,
-                             providerUserId varchar(255),
-                             rank int not null,
-                             displayName varchar(255),
-                             profileUrl varchar(512),
-                             imageUrl varchar(512),
-                             accessToken varchar(512) not null,
-                             secret varchar(512),
-                             refreshToken varchar(512),
-                             expireTime bigint,
-  primary key (userId, providerId, providerUserId));
-create unique index UserConnectionRank on UserConnection(userId, providerId, rank);
+
+CREATE TABLE UserConnection (
+  userId         VARCHAR(255) NOT NULL,
+  providerId     VARCHAR(255) NOT NULL,
+  providerUserId VARCHAR(255),
+  rank           INT          NOT NULL,
+  displayName    VARCHAR(255),
+  profileUrl     VARCHAR(512),
+  imageUrl       VARCHAR(512),
+  accessToken    VARCHAR(512) NOT NULL,
+  secret         VARCHAR(512),
+  refreshToken   VARCHAR(512),
+  expireTime     BIGINT,
+  PRIMARY KEY (userId, providerId, providerUserId)
+);
+CREATE UNIQUE INDEX UserConnectionRank ON UserConnection (userId, providerId, rank);
