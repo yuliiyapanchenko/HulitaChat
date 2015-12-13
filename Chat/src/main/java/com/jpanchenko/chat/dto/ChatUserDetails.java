@@ -113,6 +113,11 @@ public class ChatUserDetails extends SocialUser {
             return this;
         }
 
+        public Builder authorities(Collection<? extends GrantedAuthority> authorities) {
+            this.authorities.addAll(authorities);
+            return this;
+        }
+
         public Builder socialSignInProvider(UserSigInProvider socialSignInProvider) {
             this.socialSignInProvider = socialSignInProvider == null ? null : socialSignInProvider.getSocialMediaService();
             return this;

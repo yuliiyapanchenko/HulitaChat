@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -41,5 +42,13 @@ public class UserRepository {
     public User addUser(User user) {
         entityManager.persist(user);
         return getUserByEmail(user.getEmail());
+    }
+
+    @Transactional
+    public Collection<? extends User> search(String firstName, String lastName) {
+        return entityManager.createQuery("from User where firstname like :firstName or lastname like :lastName")
+                .setParameter("firstName", firstName)
+                .setParameter("lastName", lastName)
+                .getResultList();
     }
 }

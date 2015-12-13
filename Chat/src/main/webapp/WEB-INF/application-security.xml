@@ -17,7 +17,7 @@
         <form-login login-page="/login" authentication-failure-url="/login-error"
                     login-processing-url="/j_spring_security_check" username-parameter="j_username"
                     password-parameter="j_password"/>
-        <logout logout-success-url="/" logout-url="/j_spring_security_logout" />
+        <logout logout-success-url="/" logout-url="/j_spring_security_logout"/>
 
         <!-- Anyone can access these urls -->
         <intercept-url pattern="/auth/**" access="permitAll()"/>
@@ -32,8 +32,6 @@
         <intercept-url pattern="/**" access="hasRole('ROLE_DEVELOPERS') || hasRole('ROLE_USER')"/>
 
         <custom-filter ref="socialAuthenticationFilter" before="PRE_AUTH_FILTER"/>
-
-        <!--<csrf disabled="true"/>-->
 
     </http>
 
@@ -53,18 +51,53 @@
                                                                 WHERE users.email=?"/>
         </authentication-provider>
 
-        <!-- LDAP auth -->
-        <ldap-authentication-provider
-                user-search-filter="(uid={0})"
-                user-search-base="ou=people"
-                group-search-filter="(uniqueMember={0})"
-                group-search-base="ou=groups"
-                group-role-attribute="cn"
-                role-prefix="ROLE_"/>
+        <!--LDAP auth -->
+        <ldap-authentication-provider server-ref="contextSource" user-context-mapper-ref="ldapUserDetailsMapper"
+                                      user-search-filter="(uid={0})"
+                                      user-search-base="ou=people"
+                                      group-search-filter="(uniqueMember={0})"
+                                      group-search-base="ou=groups"
+                                      group-role-attribute="cn"
+                                      role-prefix="ROLE_"/>
+
+        <!--<authentication-provider ref="ldapAuthenticationProvider"/>-->
 
     </authentication-manager>
 
-    <ldap-server ldif="classpath:test-server.ldif"/>
+    <ldap-server ldif="classpath:test-server.ldif" id="contextSource"/>
+
+    <!--TODO: setup ldap server and add its config to app props-->
+    <!--<ldap:context-source id="contextSource"-->
+    <!--password="${sample.ldap.password}"-->
+    <!--url="${sample.ldap.url}"-->
+    <!--username="${sample.ldap.userDn}"-->
+    <!--base="${sample.ldap.base}" />-->
+
+    <beans:bean id="ldapAuthenticationProvider"
+                class="org.springframework.security.ldap.authentication.LdapAuthenticationProvider">
+        <beans:constructor-arg>
+            <beans:bean class="org.springframework.security.ldap.authentication.BindAuthenticator">
+                <beans:constructor-arg ref="contextSource"/>
+                <beans:property name="userDnPatterns">
+                    <beans:list>
+                        <beans:value>uid={0},ou=people</beans:value>
+                    </beans:list>
+                </beans:property>
+            </beans:bean>
+        </beans:constructor-arg>
+        <beans:constructor-arg>
+            <beans:bean
+                    class="org.springframework.security.ldap.authentication.UserDetailsServiceLdapAuthoritiesPopulator">
+                <beans:constructor-arg name="userService" ref="userService"/>
+            </beans:bean>
+        </beans:constructor-arg>
+        <beans:property name="hideUserNotFoundExceptions" value="false"/>
+        <beans:property name="userDetailsContextMapper" ref="ldapUserDetailsMapper"/>
+    </beans:bean>
+
+    <beans:bean id="ldapUserDetailsMapper"
+                class="com.jpanchenko.chat.dto.ChatLdapUserDetailsMapper"/>
+
 
     <beans:bean id="socialAuthenticationProvider"
                 class="org.springframework.social.security.SocialAuthenticationProvider">
@@ -86,6 +119,6 @@
     <beans:bean id="userIdSource" class="org.springframework.social.security.AuthenticationNameUserIdSource"/>
 
     <beans:bean id="textEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors"
-          factory-method="noOpText" />
+                factory-method="noOpText"/>
 
 </beans:beans>

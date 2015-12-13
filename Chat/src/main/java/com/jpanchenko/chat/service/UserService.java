@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,9 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     UserSignInProviderService userSignInProviderService;
+
+//    @Autowired
+//    private LdapTemplate ldapTemplate;
 
     private List<User> getUsers() {
         return userRepository.getUsers();
@@ -93,6 +97,25 @@ public class UserService implements UserDetailsService {
         return newUser;
     }
 
+    public User addUser(ChatUserDetails userDetails) throws DuplicateEmailException {
+        if (emailExists(userDetails.getUsername()))
+            throw new DuplicateEmailException("The email address: " + userDetails.getUsername() + " is already in use.");
+        String encodedPassword = encodePassword(userDetails.getPassword());
+        User user = User.getBuilder()
+                .email(userDetails.getUsername())
+                .firstname(userDetails.getFirstname())
+                .lastname(userDetails.getLastname())
+                .password(encodedPassword)
+                .build();
+        User newUser = userRepository.addUser(user);
+        authorityService.addUserAuthority(newUser);
+        return newUser;
+    }
+
+    private String encodePassword(String password) {
+        return PasswordEncoder.bcrypt(password);
+    }
+
     private boolean emailExists(String email) {
         return userRepository.getUserByEmail(email) != null;
     }
@@ -130,4 +153,24 @@ public class UserService implements UserDetailsService {
             ex.printStackTrace();
         }
     }
+
+    public List<User> search(String firstName, String lastName) {
+        List<User> users = new ArrayList<>();
+        users.addAll(userRepository.search(firstName, lastName));
+//        users.addAll(findUser(firstName+lastName));
+        return users;
+    }
+
+//    public List<User> findUser(String dn) {
+//        return (List<User>) ldapTemplate.lookup(dn, new PersonAttributesMapper());
+//    }
+//
+//    private class PersonAttributesMapper implements AttributesMapper<User> {
+//        public User mapFromAttributes(Attributes attrs) throws NamingException {
+//            User user = new User();
+//            user.setFirstname((String) attrs.get("cn").get());
+//            user.setLastname((String) attrs.get("sn").get());
+//            return user;
+//        }
+//    }
 }

@@ -15,12 +15,12 @@ public class LoginLogoutController {
 
     @RequestMapping("/")
     public String root(Locale locale) {
-        return "redirect:chat/chat";
+        return "redirect:app";
     }
 
-    @RequestMapping("/chat/chat")
+    @RequestMapping("/app")
     public String userIndex() {
-        return "chat/chat";
+        return "app/publicChat";
     }
 
     @RequestMapping(value = "/login")
