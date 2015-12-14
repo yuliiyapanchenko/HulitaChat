@@ -1,13 +1,16 @@
 package com.jpanchenko.chat.service;
 
-import com.jpanchenko.chat.dto.ChatUserDetails;
+import com.jpanchenko.chat.dto.ChatSocialUserDetails;
+import com.jpanchenko.chat.dto.DaoUserDetails;
 import com.jpanchenko.chat.dto.RegistrationForm;
+import com.jpanchenko.chat.dto.UserSearch;
 import com.jpanchenko.chat.exception.DuplicateEmailException;
 import com.jpanchenko.chat.model.Authority;
 import com.jpanchenko.chat.model.User;
 import com.jpanchenko.chat.model.UserSigInProvider;
 import com.jpanchenko.chat.repository.UserRepository;
 import com.jpanchenko.chat.utils.PasswordEncoder;
+import com.jpanchenko.chat.utils.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -39,9 +42,6 @@ public class UserService implements UserDetailsService {
     @Autowired
     UserSignInProviderService userSignInProviderService;
 
-//    @Autowired
-//    private LdapTemplate ldapTemplate;
-
     private List<User> getUsers() {
         return userRepository.getUsers();
     }
@@ -57,6 +57,10 @@ public class UserService implements UserDetailsService {
         return usersMap;
     }
 
+    public User getUserByUsername(String username) {
+        return userRepository.getUserByEmail(username);
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.getUserByEmail(username);
@@ -65,7 +69,7 @@ public class UserService implements UserDetailsService {
         }
         List<Authority> authorities = authorityService.getUserAuthority(user);
         UserSigInProvider signInProvider = userSignInProviderService.getUserSignInProvider(user);
-        return new ChatUserDetails.Builder()
+        return new ChatSocialUserDetails.Builder()
                 .firstname(user.getFirstname())
                 .id(user.getId())
                 .lastName(user.getLastname())
@@ -79,7 +83,7 @@ public class UserService implements UserDetailsService {
     public User registerNewUserAccount(RegistrationForm form) throws DuplicateEmailException {
         if (emailExists(form.getEmail()))
             throw new DuplicateEmailException("The email address: " + form.getEmail() + " is already in use.");
-        String encodedPassword = encodePassword(form);
+        String encodedPassword = encodePassword(form.getPassword(), form.isNormalRegistration());
         User user = User.getBuilder()
                 .email(form.getEmail())
                 .firstname(form.getFirstname())
@@ -97,14 +101,12 @@ public class UserService implements UserDetailsService {
         return newUser;
     }
 
-    public User addUser(ChatUserDetails userDetails) throws DuplicateEmailException {
-        if (emailExists(userDetails.getUsername()))
-            throw new DuplicateEmailException("The email address: " + userDetails.getUsername() + " is already in use.");
-        String encodedPassword = encodePassword(userDetails.getPassword());
+    public User addUser(DaoUserDetails userDetails) {
+        String encodedPassword = encodePassword(userDetails.getPassword(), true);
         User user = User.getBuilder()
                 .email(userDetails.getUsername())
-                .firstname(userDetails.getFirstname())
-                .lastname(userDetails.getLastname())
+                .firstname(userDetails.getFirstName())
+                .lastname(userDetails.getLastName())
                 .password(encodedPassword)
                 .build();
         User newUser = userRepository.addUser(user);
@@ -112,19 +114,22 @@ public class UserService implements UserDetailsService {
         return newUser;
     }
 
-    private String encodePassword(String password) {
-        return PasswordEncoder.bcrypt(password);
-    }
-
     private boolean emailExists(String email) {
         return userRepository.getUserByEmail(email) != null;
     }
 
-    private String encodePassword(RegistrationForm form) {
-        if (form.isNormalRegistration()) {
-            return PasswordEncoder.bcrypt(form.getPassword());
+    private String encodePassword(String password, boolean isNormalRegistration) {
+        if (isNormalRegistration) {
+            return PasswordEncoder.bcrypt(password);
         }
         return null;
+    }
+
+    public List<UserSearch> search(String firstName, String lastName) {
+        String currentUser = SecurityUtil.getCurrentUsername();
+        List<UserSearch> users = new ArrayList<>();
+        users.addAll(userRepository.search(firstName, lastName, currentUser));
+        return users;
     }
 
     @PostConstruct
@@ -154,23 +159,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public List<User> search(String firstName, String lastName) {
-        List<User> users = new ArrayList<>();
-        users.addAll(userRepository.search(firstName, lastName));
-//        users.addAll(findUser(firstName+lastName));
-        return users;
+    public User getUserById(int id) {
+        return userRepository.getUserById(id);
     }
-
-//    public List<User> findUser(String dn) {
-//        return (List<User>) ldapTemplate.lookup(dn, new PersonAttributesMapper());
-//    }
-//
-//    private class PersonAttributesMapper implements AttributesMapper<User> {
-//        public User mapFromAttributes(Attributes attrs) throws NamingException {
-//            User user = new User();
-//            user.setFirstname((String) attrs.get("cn").get());
-//            user.setLastname((String) attrs.get("sn").get());
-//            return user;
-//        }
-//    }
 }

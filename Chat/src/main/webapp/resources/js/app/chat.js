@@ -12,6 +12,11 @@ $(document).ready(function () {
         that.messageIndex = ko.observable(0);
         that.activePollingXhr = ko.observable(null);
 
+        // Contacts
+        that.firstname = ko.observable('');
+        that.lastname = ko.observable('');
+        that.users = ko.observableArray();
+
         var keepPolling = false;
 
         that.contactView = function () {
@@ -79,30 +84,46 @@ $(document).ready(function () {
             that.chatContent('');
         }
 
-        // Contacts
-        that.firstname = ko.observable('');
-        that.lastname = ko.observable('');
-        that.users = ko.observable('');
+        function User(id, firstname, lastname) {
+            var self = this;
+            self.id = id;
+            self.firstname = firstname;
+            self.lastname = lastname;
+        }
 
         that.searchContact = function () {
-            if (that.firstname().trim() != '' || that.lastname.trim() != '') {
+            if (that.firstname().trim() != '' || that.lastname().trim() != '') {
                 var form = $("#searchContactForm");
                 $.ajax({
                     url: form.attr("action") + "?_csrf=" + $('input[name="_csrf"]').prop('value'),
                     type: "POST",
                     data: {
-                        'firstName': $("#searchContactForm input[name=firstname]").val(),
-                        'lastName': $("#searchContactForm input[name=lastname]").val()
+                        'firstName': that.firstname(),
+                        'lastName': that.lastname()
                     },
                     success: function (users) {
-                        that.users = users;
+                        that.users([]);
+                        users.forEach(function (user) {
+                            that.users.push(new User(user.id, user.firstname, user.lastname));
+                        });
                     },
                     error: function (xhr) {
                         console.error("Error searching contact: status=" + xhr.status + ", statusText=" + xhr.statusText);
                     }
                 });
-                //that.contact('');
             }
+        }
+
+        that.addUser = function(){
+            var form = $("#addUserForm");
+            $.ajax({
+                url: form.attr("action") + "?_csrf=" + $('input[name="_csrf"]').prop('value'),
+                type: "POST",
+                data: "id=" + this.id,
+                error: function (xhr) {
+                    console.error("Error adding contact: status=" + xhr.status + ", statusText=" + xhr.statusText);
+                }
+            });
         }
     }
 

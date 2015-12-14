@@ -75,6 +75,8 @@ CREATE TABLE contacts (
   CONSTRAINT fk_contacts_contact FOREIGN KEY (id_contact) REFERENCES users (id)
 );
 
+CREATE UNIQUE INDEX ix_user_contact ON contacts (id_user, id_contact);
+
 
 CREATE TABLE UserConnection (
   userId         VARCHAR(255) NOT NULL,

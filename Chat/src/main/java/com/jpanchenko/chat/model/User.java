@@ -2,7 +2,6 @@ package com.jpanchenko.chat.model;
 
 import javax.persistence.*;
 import java.sql.Date;
-import java.util.List;
 
 /**
  * Created by Julia on 29.11.2015.
@@ -17,17 +16,6 @@ public class User extends BaseEntity {
     private Date birtdate;
     private boolean enabled;
     private String email;
-
-    private List<Authority> authorities;
-
-    @OneToMany
-    public List<Authority> getAuthorities() {
-        return authorities;
-    }
-
-    public void setAuthorities(List<Authority> authorities) {
-        this.authorities = authorities;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

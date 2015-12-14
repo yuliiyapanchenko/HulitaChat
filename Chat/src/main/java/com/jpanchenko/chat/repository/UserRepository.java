@@ -1,5 +1,6 @@
 package com.jpanchenko.chat.repository;
 
+import com.jpanchenko.chat.dto.UserSearch;
 import com.jpanchenko.chat.model.User;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,10 +46,18 @@ public class UserRepository {
     }
 
     @Transactional
-    public Collection<? extends User> search(String firstName, String lastName) {
-        return entityManager.createQuery("from User where firstname like :firstName or lastname like :lastName")
+    public Collection<UserSearch> search(String firstName, String lastName, String excludeUsername) {
+        return entityManager.createQuery(
+                "select new com.jpanchenko.chat.dto.UserSearch(u.id, u.firstname, u.lastname)" +
+                        "from User as u where (u.firstname like :firstName or u.lastname like :lastName) and u.email not like :excludeUsername")
                 .setParameter("firstName", firstName)
                 .setParameter("lastName", lastName)
+                .setParameter("excludeUsername", excludeUsername)
                 .getResultList();
+    }
+
+    @Transactional
+    public User getUserById(int id) {
+        return entityManager.find(User.class, id);
     }
 }

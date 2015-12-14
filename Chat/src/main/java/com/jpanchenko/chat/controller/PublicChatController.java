@@ -1,15 +1,12 @@
 package com.jpanchenko.chat.controller;
 
-import com.jpanchenko.chat.dto.ChatUserDetails;
 import com.jpanchenko.chat.repository.ChatRepository;
+import com.jpanchenko.chat.utils.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.Collections;
@@ -18,7 +15,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Controller
+@RestController
 @RequestMapping("/public/chat")
 public class PublicChatController {
 
@@ -31,7 +28,6 @@ public class PublicChatController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    @ResponseBody
     public DeferredResult<List<String>> getMessages(@RequestParam int messageIndex) {
         final DeferredResult<List<String>> deferredResult = new DeferredResult<>(null, Collections.emptyList());
         this.chatRequests.put(deferredResult, messageIndex);
@@ -49,9 +45,8 @@ public class PublicChatController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    @ResponseBody
     public void postMessage(@RequestParam String message) {
-        String userName = getCurrentUsername();
+        String userName = SecurityUtil.getCurrentUserFullName();
         message = "[" + userName + "] " + message;
         this.chatRepository.addMessage(message);
         for (Entry<DeferredResult<List<String>>, Integer> entry : this.chatRequests.entrySet()) {
@@ -59,11 +54,4 @@ public class PublicChatController {
             entry.getKey().setResult(messages);
         }
     }
-
-    private String getCurrentUsername() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        ChatUserDetails principal = (ChatUserDetails) authentication.getPrincipal();
-        return principal.getFirstname() + " " + principal.getLastname();
-    }
-
 }

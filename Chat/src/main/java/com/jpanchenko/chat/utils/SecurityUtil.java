@@ -1,5 +1,6 @@
 package com.jpanchenko.chat.utils;
 
+import com.jpanchenko.chat.dto.ChatSocialUserDetails;
 import com.jpanchenko.chat.dto.ChatUserDetails;
 import com.jpanchenko.chat.model.Authority;
 import com.jpanchenko.chat.model.User;
@@ -15,7 +16,7 @@ import java.util.List;
  */
 public class SecurityUtil {
     public static void logInUser(User user, List<Authority> authorities, UserSigInProvider signInProvider) {
-        ChatUserDetails userDetails = new ChatUserDetails.Builder()
+        ChatSocialUserDetails userDetails = new ChatSocialUserDetails.Builder()
                 .firstname(user.getFirstname())
                 .lastName(user.getLastname())
                 .username(user.getEmail())
@@ -26,5 +27,17 @@ public class SecurityUtil {
                 .build();
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    public static String getCurrentUserFullName() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        ChatUserDetails principal = (ChatUserDetails) authentication.getPrincipal();
+        return principal.getFirstName() + " " + principal.getLastName();
+    }
+
+    public static String getCurrentUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        ChatUserDetails principal = (ChatUserDetails) authentication.getPrincipal();
+        return principal.getUsername();
     }
 }

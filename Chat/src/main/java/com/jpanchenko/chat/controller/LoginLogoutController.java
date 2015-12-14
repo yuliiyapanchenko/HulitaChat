@@ -20,7 +20,7 @@ public class LoginLogoutController {
 
     @RequestMapping("/app")
     public String userIndex() {
-        return "app/publicChat";
+        return "app/main";
     }
 
     @RequestMapping(value = "/login")
@@ -49,7 +49,9 @@ public class LoginLogoutController {
         return "error";
     }
 
-    /** Substitute 'less than' and 'greater than' symbols by its HTML entities. */
+    /**
+     * Substitute 'less than' and 'greater than' symbols by its HTML entities.
+     */
     private String escapeTags(String text) {
         if (text == null) {
             return null;

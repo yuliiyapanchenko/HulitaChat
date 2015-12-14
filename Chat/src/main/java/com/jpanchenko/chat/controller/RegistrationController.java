@@ -46,7 +46,7 @@ public class RegistrationController {
 
     @Inject
     public RegistrationController(ConnectionFactoryLocator connectionFactoryLocator,
-                            UsersConnectionRepository connectionRepository) {
+                                  UsersConnectionRepository connectionRepository) {
         this.providerSignInUtils = new ProviderSignInUtils(connectionFactoryLocator, connectionRepository);
     }
 

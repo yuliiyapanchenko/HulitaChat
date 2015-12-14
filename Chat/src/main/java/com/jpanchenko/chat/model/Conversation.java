@@ -1,7 +1,6 @@
 package com.jpanchenko.chat.model;
 
 import javax.persistence.*;
-import java.util.List;
 
 /**
  * Created by Julia on 29.11.2015.

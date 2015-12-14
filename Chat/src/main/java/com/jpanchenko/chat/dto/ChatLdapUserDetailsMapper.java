@@ -1,6 +1,5 @@
 package com.jpanchenko.chat.dto;
 
-import com.jpanchenko.chat.exception.DuplicateEmailException;
 import com.jpanchenko.chat.model.User;
 import com.jpanchenko.chat.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,21 +26,15 @@ public class ChatLdapUserDetailsMapper extends LdapUserDetailsMapper {
             return userService.loadUserByUsername(username);
         } catch (UsernameNotFoundException ex) {
             LdapUserDetails user = (LdapUserDetails) super.mapUserFromContext(ctx, username, authorities);
-            ChatUserDetails chatUserDetails = new ChatUserDetails.Builder()
+            DaoUserDetails chatUserDetails = new DaoUserDetails.Builder()
                     .firstname(ctx.getStringAttribute("cn"))
                     .lastName(ctx.getStringAttribute("sn"))
                     .password(user.getPassword())
                     .username(user.getUsername())
                     .authorities(authorities)
                     .build();
-            User newUser;
-            try {
-                newUser = userService.addUser(chatUserDetails);
-            } catch (DuplicateEmailException e) {
-                return chatUserDetails;
-            }
+            User newUser = userService.addUser(chatUserDetails);
             chatUserDetails.setId(newUser.getId());
-            chatUserDetails.setAuthorityList(newUser.getAuthorities());
             return chatUserDetails;
         }
     }

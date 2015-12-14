@@ -39,28 +39,19 @@
 
         <authentication-provider ref="socialAuthenticationProvider"/>
 
-        <!-- DB auth -->
-        <authentication-provider>
+        <authentication-provider user-service-ref="daoUserService">
             <password-encoder hash="bcrypt"/>
-            <jdbc-user-service data-source-ref="dataSource"
-                               users-by-username-query="SELECT email as username, password, enabled FROM users WHERE email=?"
-                               authorities-by-username-query="SELECT users.email as username, roles.role as authority
-                                                                FROM authorities
-                                                                INNER JOIN roles ON roles.id = authorities.role_id
-                                                                INNER JOIN users ON users.id = authorities.user_id
-                                                                WHERE users.email=?"/>
         </authentication-provider>
 
         <!--LDAP auth -->
-        <ldap-authentication-provider server-ref="contextSource" user-context-mapper-ref="ldapUserDetailsMapper"
+        <ldap-authentication-provider server-ref="contextSource"
+                                      user-context-mapper-ref="ldapUserDetailsMapper"
                                       user-search-filter="(uid={0})"
                                       user-search-base="ou=people"
                                       group-search-filter="(uniqueMember={0})"
                                       group-search-base="ou=groups"
                                       group-role-attribute="cn"
                                       role-prefix="ROLE_"/>
-
-        <!--<authentication-provider ref="ldapAuthenticationProvider"/>-->
 
     </authentication-manager>
 
@@ -73,31 +64,8 @@
     <!--username="${sample.ldap.userDn}"-->
     <!--base="${sample.ldap.base}" />-->
 
-    <beans:bean id="ldapAuthenticationProvider"
-                class="org.springframework.security.ldap.authentication.LdapAuthenticationProvider">
-        <beans:constructor-arg>
-            <beans:bean class="org.springframework.security.ldap.authentication.BindAuthenticator">
-                <beans:constructor-arg ref="contextSource"/>
-                <beans:property name="userDnPatterns">
-                    <beans:list>
-                        <beans:value>uid={0},ou=people</beans:value>
-                    </beans:list>
-                </beans:property>
-            </beans:bean>
-        </beans:constructor-arg>
-        <beans:constructor-arg>
-            <beans:bean
-                    class="org.springframework.security.ldap.authentication.UserDetailsServiceLdapAuthoritiesPopulator">
-                <beans:constructor-arg name="userService" ref="userService"/>
-            </beans:bean>
-        </beans:constructor-arg>
-        <beans:property name="hideUserNotFoundExceptions" value="false"/>
-        <beans:property name="userDetailsContextMapper" ref="ldapUserDetailsMapper"/>
-    </beans:bean>
-
     <beans:bean id="ldapUserDetailsMapper"
                 class="com.jpanchenko.chat.dto.ChatLdapUserDetailsMapper"/>
-
 
     <beans:bean id="socialAuthenticationProvider"
                 class="org.springframework.social.security.SocialAuthenticationProvider">
