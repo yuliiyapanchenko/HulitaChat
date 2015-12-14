@@ -1,11 +1,13 @@
 package com.jpanchenko.chat.service;
 
+import com.jpanchenko.chat.dto.UserSearch;
 import com.jpanchenko.chat.model.Contact;
 import com.jpanchenko.chat.model.User;
 import com.jpanchenko.chat.repository.ContactsRepository;
-import com.jpanchenko.chat.utils.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Created by jpanchenko on 14.12.2015.
@@ -19,15 +21,18 @@ public class ContactsService {
     @Autowired
     private ContactsRepository contactsRepository;
 
-    public boolean addContact(int id) {
-        User currUser = userService.getUserByUsername(SecurityUtil.getCurrentUsername());
-        User contact = userService.getUserById(id);
+    public void addContact(int contactId) {
+        User currUser = userService.getLoggedInUser();
+        User contact = userService.getUserById(contactId);
         if (currUser != null && contact != null) {
             Contact dbContact = new Contact();
             dbContact.setUser(currUser);
             dbContact.setContact(contact);
-            return contactsRepository.addContact(dbContact);
+            contactsRepository.addContact(dbContact);
         }
-        return false;
+    }
+
+    public List<UserSearch> getLoggedInUserContacts() {
+        return contactsRepository.getUserContacts(userService.getLoggedInUser());
     }
 }

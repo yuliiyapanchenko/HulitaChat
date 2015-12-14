@@ -15,7 +15,7 @@ public class LoginLogoutController {
 
     @RequestMapping("/")
     public String root(Locale locale) {
-        return "redirect:app";
+        return "app/main";
     }
 
     @RequestMapping("/app")

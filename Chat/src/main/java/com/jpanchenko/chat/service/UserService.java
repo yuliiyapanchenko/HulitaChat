@@ -34,6 +34,9 @@ public class UserService implements UserDetailsService {
     UserRepository userRepository;
 
     @Autowired
+    ContactsService contactsService;
+
+    @Autowired
     RoleService roleService;
 
     @Autowired
@@ -129,6 +132,7 @@ public class UserService implements UserDetailsService {
         String currentUser = SecurityUtil.getCurrentUsername();
         List<UserSearch> users = new ArrayList<>();
         users.addAll(userRepository.search(firstName, lastName, currentUser));
+        users.removeAll(contactsService.getLoggedInUserContacts());
         return users;
     }
 
@@ -161,5 +165,9 @@ public class UserService implements UserDetailsService {
 
     public User getUserById(int id) {
         return userRepository.getUserById(id);
+    }
+
+    public User getLoggedInUser() {
+        return getUserByUsername(SecurityUtil.getCurrentUsername());
     }
 }

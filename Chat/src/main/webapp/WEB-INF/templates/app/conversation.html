@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <link rel="stylesheet" type="text/css" th:href="@{/resources/css/social-buttons-3.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/resources/css/font-awesome.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/resources/css/bootstrap.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/resources/css/bootstrap-theme.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/resources/css/style.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/resources/css/navbar-fixed-top.css}"/>
+</head>
+<body>
+
+<div th:fragment="newConversation" data-bind="visible: newConversationView() != null">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <h2 th:text="#{label.conversation.new}"></h2>
+
+            <div data-bind="visible: userContacts().length == 0">
+                <h3 class="alert alert-warning" role="alert" style="color: red"
+                    th:text="#{text.contacts.list.empty.error}"></h3>
+            </div>
+
+            <div data-bind="visible: userContacts() != null">
+                <form id="createConversationForm" th:action="@{/conversations/add}">
+                    <div class="row">
+                        <div class="form-group col-lg-4">
+                            <label th:text="#{label.add.user.to.conversation}" for="selectContact"></label>
+                            <select id="selectContact" class="form-control" multiple="multiple" data-bind="options: userContacts, selectedOptions: selectedContacts,
+                                                                                optionsText: function(item) {
+                                                                                       return item.firstname + ' ' + item.lastname;
+                                                                                   }">
+                                <option data-bind="text: firstname + ' ' + lastname"></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-lg-4">
+                            <label class="control-label" for="title" th:text="#{label.conversation.title}">:</label>
+                            <input id="title" name="title" type="text" class="form-control" data-bind="value: title"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-lg-4">
+                            <button type="submit" class="btn btn-default" th:text="#{button.create}"></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+<script type="text/javascript" src="../../../resources/js/vendor/jquery-1.11.3.min.js"
+        th:src="@{/resources/js/vendor/jquery-1.11.3.min.js}"></script>
+<script type="text/javascript" src="../../../resources/js/vendor/knockout-3.4.0.js"
+        th:src="@{/resources/js/vendor/knockout-3.4.0.js}"></script>
+<script type="text/javascript" src="../../../resources/js/app/chat.js" th:src="@{/resources/js/app/chat.js}"></script>
+<script type="text/javascript" src="../../../resources/js/vendor/bootstrap.min.js"
+        th:src="@{/resources/js/vendor/bootstrap.min.js}"></script>
+</html>

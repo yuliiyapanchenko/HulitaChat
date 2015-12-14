@@ -38,4 +38,25 @@ public class UserSearch {
     public void setLastname(String lastname) {
         this.lastname = lastname;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UserSearch that = (UserSearch) o;
+
+        if (id != that.id) return false;
+        if (!firstname.equals(that.firstname)) return false;
+        return lastname.equals(that.lastname);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + firstname.hashCode();
+        result = 31 * result + lastname.hashCode();
+        return result;
+    }
 }

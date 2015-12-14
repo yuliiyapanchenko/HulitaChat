@@ -19,7 +19,11 @@
 
 <div th:substituteby="app/publicChat::publicChatView"></div>
 
-<div th:substituteby="app/addContact::addContactView"></div>
+<div th:substituteby="app/contacts::addContactView"></div>
+
+<div th:substituteby="app/contacts::userContactsView"></div>
+
+<div th:substituteby="app/conversation::newConversation"></div>
 
 </body>
 <script type="text/javascript" src="../../../resources/js/vendor/jquery-1.11.3.min.js"

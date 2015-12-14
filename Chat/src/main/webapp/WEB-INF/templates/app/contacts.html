@@ -50,16 +50,35 @@
             </form>
         </div>
 
-        <div class="panel-body">
-            <h4>Found users:</h4>
+        <div class="panel-body" data-bind="visible: users() != null">
+            <h4 th:text="#{link.found.users}"></h4>
             <ul data-bind="foreach: users">
                 <li>
                     <form id="addUserForm" th:action="@{/contacts/add}">
                         <span data-bind="text: firstname + ' ' + lastname"> </span>
-                        <a href="#" data-bind="click: $parent.addUser">Add</a>
+                        <a href="#" data-bind="click: $parent.addContact" th:text="#{link.add.contact}"></a>
                     </form>
                 </li>
             </ul>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="userContactsView" data-bind="visible: userContactsView() != null">
+    <div class="page-header">
+        <h1 th:text="#{label.user.contacts.page.title}"></h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="panel-body">
+                <form id="userContactsForm" th:action="@{/contacts/getContacts}">
+                    <ul data-bind="foreach: userContacts">
+                        <li>
+                            <span data-bind="text: firstname + ' ' + lastname"> </span>
+                        </li>
+                    </ul>
+                </form>
+            </div>
         </div>
     </div>
 </div>

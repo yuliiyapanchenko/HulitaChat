@@ -25,17 +25,18 @@ public class ContactsController {
     private ContactsService contactsService;
 
     @RequestMapping(path = "/add", method = RequestMethod.POST)
-    public boolean addContact(@RequestParam int id) {
-        return contactsService.addContact(id);
+    public void addContact(@RequestParam int contactId) {
+        contactsService.addContact(contactId);
     }
 
-    @RequestMapping(path = "/search", method = RequestMethod.POST)
+    @RequestMapping(path = "/search", method = RequestMethod.GET)
     public List<UserSearch> searchContact(@RequestParam String firstName,
                                           @RequestParam String lastName) {
         return userService.search(firstName, lastName);
     }
 
-//    @RequestMapping(path = "/getContacts", method = RequestMethod.GET)
-//    public boolean getUserContacts(@RequestParam int userId) {
-//    }
+    @RequestMapping(path = "/getContacts", method = RequestMethod.GET)
+    public List<UserSearch> getCurrentUserContacts() {
+        return contactsService.getLoggedInUserContacts();
+    }
 }

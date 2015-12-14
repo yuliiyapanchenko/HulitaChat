@@ -1,11 +1,14 @@
 package com.jpanchenko.chat.repository;
 
+import com.jpanchenko.chat.dto.UserSearch;
 import com.jpanchenko.chat.model.Contact;
+import com.jpanchenko.chat.model.User;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 /**
  * Created by jpanchenko on 14.12.2015.
@@ -18,12 +21,15 @@ public class ContactsRepository {
     EntityManager entityManager;
 
     @Transactional
-    public boolean addContact(Contact contact) {
-        try {
-            entityManager.persist(contact);
-        } catch (Exception ex) {
-            return false;
-        }
-        return true;
+    public void addContact(Contact contact) {
+        entityManager.persist(contact);
+    }
+
+    @Transactional
+    public List<UserSearch> getUserContacts(User user) {
+        return entityManager.createQuery("select new com.jpanchenko.chat.dto.UserSearch(u.id, u.firstname, u.lastname)" +
+                "from User as u where u.id in (select c.contact.id from Contact as c WHERE c.user =:user)")
+                .setParameter("user", user)
+                .getResultList();
     }
 }
