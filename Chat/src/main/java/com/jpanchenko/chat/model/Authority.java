@@ -50,9 +50,8 @@ public class Authority extends BaseEntity {
 
         Authority authority = (Authority) o;
 
-        if (id != authority.id) return false;
+        return id == authority.id;
 
-        return true;
     }
 
     @Override

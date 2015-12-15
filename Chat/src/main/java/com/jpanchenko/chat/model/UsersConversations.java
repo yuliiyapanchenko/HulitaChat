@@ -50,9 +50,8 @@ public class UsersConversations extends BaseEntity {
 
         UsersConversations that = (UsersConversations) o;
 
-        if (id != that.id) return false;
+        return id == that.id;
 
-        return true;
     }
 
     @Override

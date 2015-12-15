@@ -1,6 +1,6 @@
 package com.jpanchenko.chat.repository;
 
-import com.jpanchenko.chat.dto.UserSearch;
+import com.jpanchenko.chat.dto.UserDto;
 import com.jpanchenko.chat.model.User;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import java.util.Collection;
 import java.util.List;
 
@@ -24,8 +23,7 @@ public class UserRepository {
 
     @Transactional
     public List<User> getUsers() {
-        Query query = entityManager.createQuery("from User");
-        return query.getResultList();
+        return entityManager.createQuery("from User", User.class).getResultList();
     }
 
     @Transactional
@@ -40,16 +38,15 @@ public class UserRepository {
     }
 
     @Transactional
-    public User addUser(User user) {
+    public void addUser(User user) {
         entityManager.persist(user);
-        return getUserByEmail(user.getEmail());
     }
 
     @Transactional
-    public Collection<UserSearch> search(String firstName, String lastName, String excludeUsername) {
+    public Collection<UserDto> search(String firstName, String lastName, String excludeUsername) {
         return entityManager.createQuery(
-                "select new com.jpanchenko.chat.dto.UserSearch(u.id, u.firstname, u.lastname)" +
-                        "from User as u where (u.firstname like :firstName or u.lastname like :lastName) and u.email not like :excludeUsername")
+                "select new com.jpanchenko.chat.dto.UserDto(u.id, u.firstname, u.lastname)" +
+                        "from User as u where (u.firstname like :firstName or u.lastname like :lastName) and u.email not like :excludeUsername", UserDto.class)
                 .setParameter("firstName", firstName)
                 .setParameter("lastName", lastName)
                 .setParameter("excludeUsername", excludeUsername)

@@ -1,6 +1,6 @@
 package com.jpanchenko.chat.service;
 
-import com.jpanchenko.chat.dto.UserSearch;
+import com.jpanchenko.chat.dto.UserDto;
 import com.jpanchenko.chat.model.Contact;
 import com.jpanchenko.chat.model.User;
 import com.jpanchenko.chat.repository.ContactsRepository;
@@ -32,7 +32,7 @@ public class ContactsService {
         }
     }
 
-    public List<UserSearch> getLoggedInUserContacts() {
+    public List<UserDto> getLoggedInUserContacts() {
         return contactsRepository.getUserContacts(userService.getLoggedInUser());
     }
 }

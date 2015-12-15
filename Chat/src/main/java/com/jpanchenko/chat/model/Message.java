@@ -61,10 +61,8 @@ public class Message extends BaseEntity {
 
         Message message1 = (Message) o;
 
-        if (id != message1.id) return false;
-        if (message != null ? !message.equals(message1.message) : message1.message != null) return false;
+        return id == message1.id && !(message != null ? !message.equals(message1.message) : message1.message != null);
 
-        return true;
     }
 
     @Override

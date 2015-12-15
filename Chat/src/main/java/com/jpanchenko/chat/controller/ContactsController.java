@@ -1,6 +1,6 @@
 package com.jpanchenko.chat.controller;
 
-import com.jpanchenko.chat.dto.UserSearch;
+import com.jpanchenko.chat.dto.UserDto;
 import com.jpanchenko.chat.service.ContactsService;
 import com.jpanchenko.chat.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +30,13 @@ public class ContactsController {
     }
 
     @RequestMapping(path = "/search", method = RequestMethod.GET)
-    public List<UserSearch> searchContact(@RequestParam String firstName,
+    public List<UserDto> searchContact(@RequestParam String firstName,
                                           @RequestParam String lastName) {
         return userService.search(firstName, lastName);
     }
 
     @RequestMapping(path = "/getContacts", method = RequestMethod.GET)
-    public List<UserSearch> getCurrentUserContacts() {
+    public List<UserDto> getCurrentUserContacts() {
         return contactsService.getLoggedInUserContacts();
     }
 }

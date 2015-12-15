@@ -1,5 +1,6 @@
-package com.jpanchenko.chat.dto;
+package com.jpanchenko.chat.dto.security;
 
+import com.jpanchenko.chat.dto.ChatUserDetails;
 import com.jpanchenko.chat.model.Authority;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

@@ -1,6 +1,6 @@
 package com.jpanchenko.chat.validation;
 
-import com.jpanchenko.chat.dto.RegistrationForm;
+import com.jpanchenko.chat.dto.security.RegistrationForm;
 import com.jpanchenko.chat.utils.ValidatorUtil;
 
 import javax.validation.ConstraintValidator;

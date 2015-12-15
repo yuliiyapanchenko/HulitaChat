@@ -72,10 +72,8 @@ public class Conversation extends BaseEntity {
 
         Conversation that = (Conversation) o;
 
-        if (id != that.id) return false;
-        if (title != null ? !title.equals(that.title) : that.title != null) return false;
+        return id == that.id && !(title != null ? !title.equals(that.title) : that.title != null);
 
-        return true;
     }
 
     @Override

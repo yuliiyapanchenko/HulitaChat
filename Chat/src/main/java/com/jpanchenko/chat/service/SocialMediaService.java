@@ -13,7 +13,6 @@ public class SocialMediaService {
     @Autowired
     SocialMediaServiceRepository socialMediaServiceRepository;
 
-
     public com.jpanchenko.chat.model.SocialMediaService getSocialMediaService(String provider) {
         return socialMediaServiceRepository.getSocialMediaService(provider);
     }

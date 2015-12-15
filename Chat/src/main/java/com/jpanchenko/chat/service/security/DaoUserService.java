@@ -1,9 +1,10 @@
-package com.jpanchenko.chat.service;
+package com.jpanchenko.chat.service.security;
 
-import com.jpanchenko.chat.dto.DaoUserDetails;
+import com.jpanchenko.chat.dto.security.DaoUserDetails;
 import com.jpanchenko.chat.model.Authority;
 import com.jpanchenko.chat.model.User;
 import com.jpanchenko.chat.repository.UserRepository;
+import com.jpanchenko.chat.service.AuthorityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

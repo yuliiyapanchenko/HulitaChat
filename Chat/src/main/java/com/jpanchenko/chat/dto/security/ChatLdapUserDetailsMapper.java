@@ -1,4 +1,4 @@
-package com.jpanchenko.chat.dto;
+package com.jpanchenko.chat.dto.security;
 
 import com.jpanchenko.chat.model.User;
 import com.jpanchenko.chat.service.UserService;

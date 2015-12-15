@@ -16,8 +16,8 @@
         <!-- Login pages -->
         <form-login login-page="/login" authentication-failure-url="/login-error"
                     login-processing-url="/j_spring_security_check" username-parameter="j_username"
-                    password-parameter="j_password"/>
-        <logout logout-success-url="/" logout-url="/j_spring_security_logout"/>
+                    password-parameter="j_password" default-target-url="/main"/>
+        <logout logout-success-url="/login" logout-url="/j_spring_security_logout"/>
 
         <!-- Anyone can access these urls -->
         <intercept-url pattern="/auth/**" access="permitAll()"/>
@@ -65,7 +65,7 @@
     <!--base="${sample.ldap.base}" />-->
 
     <beans:bean id="ldapUserDetailsMapper"
-                class="com.jpanchenko.chat.dto.ChatLdapUserDetailsMapper"/>
+                class="com.jpanchenko.chat.dto.security.ChatLdapUserDetailsMapper"/>
 
     <beans:bean id="socialAuthenticationProvider"
                 class="org.springframework.social.security.SocialAuthenticationProvider">
@@ -73,7 +73,7 @@
         <beans:constructor-arg index="1" ref="chatSocialUserDetailsService"/>
     </beans:bean>
 
-    <beans:bean id="chatSocialUserDetailsService" class="com.jpanchenko.chat.service.ChatSocialUserDetailsService"/>
+    <beans:bean id="chatSocialUserDetailsService" class="com.jpanchenko.chat.service.security.ChatSocialUserDetailsService"/>
 
     <beans:bean id="socialAuthenticationFilter" class="org.springframework.social.security.SocialAuthenticationFilter">
         <beans:constructor-arg index="0" ref="authenticationManager"/>

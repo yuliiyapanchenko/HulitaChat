@@ -1,9 +1,9 @@
 package com.jpanchenko.chat.service;
 
-import com.jpanchenko.chat.dto.ChatSocialUserDetails;
-import com.jpanchenko.chat.dto.DaoUserDetails;
-import com.jpanchenko.chat.dto.RegistrationForm;
-import com.jpanchenko.chat.dto.UserSearch;
+import com.jpanchenko.chat.dto.security.ChatSocialUserDetails;
+import com.jpanchenko.chat.dto.security.DaoUserDetails;
+import com.jpanchenko.chat.dto.security.RegistrationForm;
+import com.jpanchenko.chat.dto.UserDto;
 import com.jpanchenko.chat.exception.DuplicateEmailException;
 import com.jpanchenko.chat.model.Authority;
 import com.jpanchenko.chat.model.User;
@@ -15,15 +15,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionKey;
+import org.springframework.social.connect.UserProfile;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by jpanchenko on 10.11.2015.
@@ -45,19 +48,11 @@ public class UserService implements UserDetailsService {
     @Autowired
     UserSignInProviderService userSignInProviderService;
 
+    @Autowired
+    SocialMediaService socialMediaService;
+
     private List<User> getUsers() {
         return userRepository.getUsers();
-    }
-
-    public Map<String, String> getUsersMap() {
-        List<User> users = getUsers();
-        Map<String, String> usersMap = new HashMap<>();
-        for (User user : users) {
-            String id = String.valueOf(user.getId());
-            String name = user.getFirstname() + " " + user.getLastname();
-            usersMap.put(id, name);
-        }
-        return usersMap;
     }
 
     public User getUserByUsername(String username) {
@@ -83,7 +78,7 @@ public class UserService implements UserDetailsService {
                 .build();
     }
 
-    public User registerNewUserAccount(RegistrationForm form) throws DuplicateEmailException {
+    private User registerNewUserAccount(RegistrationForm form) throws DuplicateEmailException {
         if (emailExists(form.getEmail()))
             throw new DuplicateEmailException("The email address: " + form.getEmail() + " is already in use.");
         String encodedPassword = encodePassword(form.getPassword(), form.isNormalRegistration());
@@ -93,15 +88,15 @@ public class UserService implements UserDetailsService {
                 .lastname(form.getLastname())
                 .password(encodedPassword)
                 .build();
-        User newUser = userRepository.addUser(user);
+        userRepository.addUser(user);
         if (form.isSocialSignIn()) {
             UserSigInProvider sigInProvider = new UserSigInProvider();
-            sigInProvider.setUser(newUser);
+            sigInProvider.setUser(user);
             sigInProvider.setSocialMediaService(form.getSignInProvider());
             userSignInProviderService.addUserSigInProvider(sigInProvider);
         }
-        authorityService.addUserAuthority(newUser);
-        return newUser;
+        authorityService.addUserAuthority(user);
+        return user;
     }
 
     public User addUser(DaoUserDetails userDetails) {
@@ -112,9 +107,9 @@ public class UserService implements UserDetailsService {
                 .lastname(userDetails.getLastName())
                 .password(encodedPassword)
                 .build();
-        User newUser = userRepository.addUser(user);
-        authorityService.addUserAuthority(newUser);
-        return newUser;
+        userRepository.addUser(user);
+        authorityService.addUserAuthority(user);
+        return user;
     }
 
     private boolean emailExists(String email) {
@@ -128,12 +123,41 @@ public class UserService implements UserDetailsService {
         return null;
     }
 
-    public List<UserSearch> search(String firstName, String lastName) {
+    public List<UserDto> search(String firstName, String lastName) {
         String currentUser = SecurityUtil.getCurrentUsername();
-        List<UserSearch> users = new ArrayList<>();
+        List<UserDto> users = new ArrayList<>();
         users.addAll(userRepository.search(firstName, lastName, currentUser));
         users.removeAll(contactsService.getLoggedInUserContacts());
         return users;
+    }
+
+    public User createUserAccount(RegistrationForm form, BindingResult result) {
+        try {
+            return registerNewUserAccount(form);
+        } catch (DuplicateEmailException ex) {
+            addFieldError("user", "email", form.getEmail(), "NotExist.user.email", result);
+        }
+        return null;
+    }
+
+    private void addFieldError(String objectName, String fieldName, String fieldValue, String errorCode, BindingResult result) {
+        FieldError fieldError = new FieldError(objectName, fieldName, fieldValue, false, new String[]{errorCode}, new Object[]{}, errorCode);
+        result.addError(fieldError);
+    }
+
+    public RegistrationForm createRegistrationForm(Connection connection) {
+        RegistrationForm registrationForm = new RegistrationForm();
+        if (connection != null) {
+            UserProfile userProfile = connection.fetchUserProfile();
+            registrationForm.setEmail(userProfile.getEmail());
+            registrationForm.setFirstname(userProfile.getFirstName());
+            registrationForm.setLastname(userProfile.getLastName());
+            ConnectionKey providerKey = connection.getKey();
+            String providerId = providerKey.getProviderId();
+            com.jpanchenko.chat.model.SocialMediaService socialMediaService = this.socialMediaService.getSocialMediaService(providerId);
+            registrationForm.setSignInProvider(socialMediaService);
+        }
+        return registrationForm;
     }
 
     @PostConstruct

@@ -50,9 +50,8 @@ public class UserSigInProvider extends BaseEntity {
 
         UserSigInProvider that = (UserSigInProvider) o;
 
-        if (id != that.id) return false;
+        return id == that.id;
 
-        return true;
     }
 
     @Override

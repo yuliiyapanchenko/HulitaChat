@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 public class AuthorityService {
 
-    public static final String ROLE_USER = "ROLE_USER";
+    private static final String ROLE_USER = "ROLE_USER";
     @Autowired
     AuthorityRepository authorityRepository;
 

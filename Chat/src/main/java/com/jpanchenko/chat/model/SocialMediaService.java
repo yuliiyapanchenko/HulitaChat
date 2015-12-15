@@ -39,11 +39,8 @@ public class SocialMediaService extends BaseEntity {
 
         SocialMediaService that = (SocialMediaService) o;
 
-        if (id != that.id) return false;
-        if (signInProvider != null ? !signInProvider.equals(that.signInProvider) : that.signInProvider != null)
-            return false;
+        return id == that.id && !(signInProvider != null ? !signInProvider.equals(that.signInProvider) : that.signInProvider != null);
 
-        return true;
     }
 
     @Override

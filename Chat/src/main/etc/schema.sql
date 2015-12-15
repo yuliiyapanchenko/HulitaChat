@@ -40,9 +40,9 @@ CREATE UNIQUE INDEX ix_role_user_id ON authorities (user_id, role_id);
 CREATE UNIQUE INDEX ix_social_provider_user_id ON user_sig_in_provider (user_id, sign_in_provider_id);
 
 CREATE TABLE conversations (
-  id        INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  id        INT         NOT NULL PRIMARY KEY AUTO_INCREMENT,
   parent_id INT,
-  title     VARCHAR(50),
+  title     VARCHAR(50) NOT NULL,
   creator   INT,
   admin     INT,
   CONSTRAINT fk_conversation_creator FOREIGN KEY (creator) REFERENCES users (id),

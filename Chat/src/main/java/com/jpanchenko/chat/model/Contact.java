@@ -50,9 +50,8 @@ public class Contact {
 
         Contact contact = (Contact) o;
 
-        if (id != contact.id) return false;
+        return id == contact.id;
 
-        return true;
     }
 
     @Override

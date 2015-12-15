@@ -1,6 +1,6 @@
 package com.jpanchenko.chat.utils;
 
-import com.jpanchenko.chat.dto.ChatSocialUserDetails;
+import com.jpanchenko.chat.dto.security.ChatSocialUserDetails;
 import com.jpanchenko.chat.dto.ChatUserDetails;
 import com.jpanchenko.chat.model.Authority;
 import com.jpanchenko.chat.model.User;

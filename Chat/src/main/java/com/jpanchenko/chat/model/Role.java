@@ -39,10 +39,8 @@ public class Role extends BaseEntity {
 
         Role role1 = (Role) o;
 
-        if (id != role1.id) return false;
-        if (role != null ? !role.equals(role1.role) : role1.role != null) return false;
+        return id == role1.id && !(role != null ? !role.equals(role1.role) : role1.role != null);
 
-        return true;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.jpanchenko.chat.repository;
 
-import com.jpanchenko.chat.dto.UserSearch;
+import com.jpanchenko.chat.dto.UserDto;
 import com.jpanchenko.chat.model.Contact;
 import com.jpanchenko.chat.model.User;
 import org.springframework.stereotype.Repository;
@@ -26,9 +26,9 @@ public class ContactsRepository {
     }
 
     @Transactional
-    public List<UserSearch> getUserContacts(User user) {
-        return entityManager.createQuery("select new com.jpanchenko.chat.dto.UserSearch(u.id, u.firstname, u.lastname)" +
-                "from User as u where u.id in (select c.contact.id from Contact as c WHERE c.user =:user)")
+    public List<UserDto> getUserContacts(User user) {
+        return entityManager.createQuery("select new com.jpanchenko.chat.dto.UserDto(u.id, u.firstname, u.lastname)" +
+                "from User as u where u.id in (select c.contact.id from Contact as c WHERE c.user =:user)", UserDto.class)
                 .setParameter("user", user)
                 .getResultList();
     }

@@ -1,18 +1,26 @@
 package com.jpanchenko.chat.dto;
 
+import javax.xml.bind.annotation.XmlElement;
+
 /**
  * Created by jpanchenko on 14.12.2015.
  */
-public class UserSearch {
+public class UserDto {
 
+    @XmlElement
     private int id;
+    @XmlElement
     private String firstname;
+    @XmlElement
     private String lastname;
 
-    public UserSearch(int id, String firstname, String lastname) {
+    public UserDto(int id, String firstname, String lastname) {
         this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
+    }
+
+    public UserDto() {
     }
 
     public int getId() {
@@ -44,11 +52,9 @@ public class UserSearch {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        UserSearch that = (UserSearch) o;
+        UserDto that = (UserDto) o;
 
-        if (id != that.id) return false;
-        if (!firstname.equals(that.firstname)) return false;
-        return lastname.equals(that.lastname);
+        return id == that.id && firstname.equals(that.firstname) && lastname.equals(that.lastname);
 
     }
 

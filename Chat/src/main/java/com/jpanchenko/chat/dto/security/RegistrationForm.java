@@ -1,4 +1,4 @@
-package com.jpanchenko.chat.dto;
+package com.jpanchenko.chat.dto.security;
 
 import com.jpanchenko.chat.model.SocialMediaService;
 import com.jpanchenko.chat.validation.PasswordsNotEmpty;

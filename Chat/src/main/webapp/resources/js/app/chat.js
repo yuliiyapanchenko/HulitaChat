@@ -5,11 +5,12 @@ $(document).ready(function () {
         var that = this;
 
         //Views
-        that.chatView = ko.observable(null);
+        that.publicChatView = ko.observable(null);
+        that.privateChatView = ko.observable(null);
         that.addContactView = ko.observable(null);
         that.userContactsView = ko.observable(null);
         that.newConversationView = ko.observable(null);
-        that.views = ko.observableArray([that.chatView, that.addContactView, that.userContactsView, that.newConversationView]);
+        that.views = ko.observableArray([that.publicChatView, that.addContactView, that.userContactsView, that.newConversationView]);
 
         function setActiveView(view) {
             that.views().forEach(function (v) {
@@ -34,13 +35,13 @@ $(document).ready(function () {
 
         //Conversations
         that.selectedContacts = ko.observableArray();
-        that.title = ko.observable(that.selectedContacts());
+        that.title = ko.observable(' ');
 
         var keepPolling = false;
 
         ///////////////////////////////////////////////
         that.joinChat = function () {
-            setActiveView(that.chatView);
+            setActiveView(that.publicChatView);
             keepPolling = true;
             pollForMessages();
         };
@@ -88,7 +89,7 @@ $(document).ready(function () {
         };
 
         that.leaveChat = function () {
-            that.chatView(null);
+            that.publicChatView(null);
             that.activePollingXhr(null);
             resetUI();
         };
@@ -191,7 +192,26 @@ $(document).ready(function () {
             setActiveView(that.newConversationView);
         };
 
-
+        that.addConversation = function () {
+            if (that.selectedContacts == null || that.selectedContacts().length == 0) {
+                alert("You have to select at least one contact");
+                return;
+            }
+            var form = $("#createConversationForm");
+            $.ajax({
+                url: form.attr("action") + "?" + "title=" + that.title() + "&" + "_csrf=" + $('input[name="_csrf"]').prop('value'),
+                type: "POST",
+                contentType: 'application/json',
+                data: JSON.stringify(that.selectedContacts()),
+                success: function (conversation) {
+                    that.title(conversation.title);
+                    setActiveView(that.privateChatView);
+                },
+                error: function (xhr) {
+                    console.error("Error adding contact: status=" + xhr.status + ", statusText=" + xhr.statusText);
+                }
+            });
+        }
 
     }
 

@@ -1,4 +1,4 @@
-package com.jpanchenko.chat.service;
+package com.jpanchenko.chat.service.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
