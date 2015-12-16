@@ -27,4 +27,9 @@ public class ConversationRepository {
     public void addUserConversation(UsersConversations usersConversations) {
         entityManager.persist(usersConversations);
     }
+
+    @Transactional
+    public Conversation getConversationById(int idConversation) {
+        return entityManager.find(Conversation.class, idConversation);
+    }
 }
