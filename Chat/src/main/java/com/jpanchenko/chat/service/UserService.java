@@ -1,9 +1,9 @@
 package com.jpanchenko.chat.service;
 
+import com.jpanchenko.chat.dto.UserDto;
 import com.jpanchenko.chat.dto.security.ChatSocialUserDetails;
 import com.jpanchenko.chat.dto.security.DaoUserDetails;
 import com.jpanchenko.chat.dto.security.RegistrationForm;
-import com.jpanchenko.chat.dto.UserDto;
 import com.jpanchenko.chat.exception.DuplicateEmailException;
 import com.jpanchenko.chat.model.Authority;
 import com.jpanchenko.chat.model.User;
@@ -26,6 +26,7 @@ import javax.annotation.PostConstruct;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -123,14 +124,6 @@ public class UserService implements UserDetailsService {
         return null;
     }
 
-    public List<UserDto> search(String firstName, String lastName) {
-        String currentUser = SecurityUtil.getCurrentUsername();
-        List<UserDto> users = new ArrayList<>();
-        users.addAll(userRepository.search(firstName, lastName, currentUser));
-        users.removeAll(contactsService.getLoggedInUserContacts());
-        return users;
-    }
-
     public User createUserAccount(RegistrationForm form, BindingResult result) {
         try {
             return registerNewUserAccount(form);
@@ -193,5 +186,9 @@ public class UserService implements UserDetailsService {
 
     public User getLoggedInUser() {
         return getUserByUsername(SecurityUtil.getCurrentUsername());
+    }
+
+    public Collection<? extends UserDto> getUsers(String firstName, String lastName) {
+        return userRepository.getUsers(firstName, lastName);
     }
 }

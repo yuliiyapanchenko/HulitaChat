@@ -43,13 +43,12 @@ public class UserRepository {
     }
 
     @Transactional
-    public Collection<UserDto> search(String firstName, String lastName, String excludeUsername) {
+    public Collection<UserDto> getUsers(String firstName, String lastName) {
         return entityManager.createQuery(
                 "select new com.jpanchenko.chat.dto.UserDto(u.id, u.firstname, u.lastname)" +
-                        "from User as u where (u.firstname like :firstName or u.lastname like :lastName) and u.email not like :excludeUsername", UserDto.class)
+                        "from User as u where (u.firstname like :firstName or u.lastname like :lastName)", UserDto.class)
                 .setParameter("firstName", firstName)
                 .setParameter("lastName", lastName)
-                .setParameter("excludeUsername", excludeUsername)
                 .getResultList();
     }
 

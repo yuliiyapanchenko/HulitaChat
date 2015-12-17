@@ -55,7 +55,6 @@ public class UserDto {
         UserDto that = (UserDto) o;
 
         return id == that.id && firstname.equals(that.firstname) && lastname.equals(that.lastname);
-
     }
 
     @Override

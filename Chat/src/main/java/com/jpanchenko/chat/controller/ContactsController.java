@@ -19,9 +19,6 @@ import java.util.List;
 public class ContactsController {
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private ContactsService contactsService;
 
     @RequestMapping(path = "/add", method = RequestMethod.POST)
@@ -31,12 +28,12 @@ public class ContactsController {
 
     @RequestMapping(path = "/search", method = RequestMethod.GET)
     public List<UserDto> searchContact(@RequestParam String firstName,
-                                          @RequestParam String lastName) {
-        return userService.search(firstName, lastName);
+                                       @RequestParam String lastName) {
+        return contactsService.searchContacts(firstName, lastName);
     }
 
     @RequestMapping(path = "/getContacts", method = RequestMethod.GET)
     public List<UserDto> getCurrentUserContacts() {
-        return contactsService.getLoggedInUserContacts();
+        return contactsService.getUserContacts();
     }
 }

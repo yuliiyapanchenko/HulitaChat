@@ -23,7 +23,8 @@ public class MessageRepository {
 
     @Transactional
     public List<MessageDto> getNewMessages(User loggedInUser) {
-        return entityManager.createQuery("select new com.jpanchenko.chat.dto.MessageDto(NewMessage.message.id, NewMessage.conversation.id, Message.message) " +
+        return entityManager.createQuery("select new com.jpanchenko.chat.dto.MessageDto(" +
+                        "NewMessage.message.id, NewMessage.conversation.id, Message.message, Message.creationTime) " +
                         "from NewMessage, Message " +
                         "join Message on Message.id=NewMessage.id " +
                         "where NewMessage.user =:user",
@@ -48,8 +49,14 @@ public class MessageRepository {
         entityManager.remove(message);
     }
 
-    public List<MessageDto> getLastMessages(int idConversation, int start, int end) {
-        entityManager.createQuery("")
-        return null;
+    @Transactional
+    public List<MessageDto> getMessages(int idConversation, int start, int end) {
+        return entityManager.createQuery("select new com.jpanchenko.chat.dto.MessageDto(m.id, m.conversation.id, m.message, m.creationTime) " +
+                "from Message as m where m.conversation.id =:idConversation " +
+                "order by m.creationTime", MessageDto.class)
+                .setParameter("idConversation", idConversation)
+                .setFirstResult(start)
+                .setMaxResults(end)
+                .getResultList();
     }
 }

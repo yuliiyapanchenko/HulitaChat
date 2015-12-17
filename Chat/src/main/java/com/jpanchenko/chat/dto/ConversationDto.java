@@ -1,7 +1,5 @@
 package com.jpanchenko.chat.dto;
 
-import com.jpanchenko.chat.model.Conversation;
-
 import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
 

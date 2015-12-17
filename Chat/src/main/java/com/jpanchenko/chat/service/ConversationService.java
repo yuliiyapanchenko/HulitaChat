@@ -1,11 +1,17 @@
 package com.jpanchenko.chat.service;
 
+import com.jpanchenko.chat.dto.ConversationDto;
+import com.jpanchenko.chat.dto.UserDto;
 import com.jpanchenko.chat.model.Conversation;
 import com.jpanchenko.chat.model.User;
 import com.jpanchenko.chat.model.UsersConversations;
 import com.jpanchenko.chat.repository.ConversationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by jpanchenko on 15.12.2015.
@@ -15,6 +21,10 @@ public class ConversationService {
 
     @Autowired
     private ConversationRepository conversationRepository;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private MessageService messageService;
 
     public void addConversation(Conversation conversation) {
         conversationRepository.addConversation(conversation);
@@ -42,5 +52,36 @@ public class ConversationService {
         usersConversations.setUser(currUser);
         usersConversations.setConversation(conversation);
         addUserConversation(usersConversations);
+    }
+
+    public List<ConversationDto> getUserLatestConversations(int start, int end) {
+        User user = userService.getLoggedInUser();
+        List<Conversation> userLatestConversations = conversationRepository.getUserLatestConversations(user, start, end);
+        List<ConversationDto> result = new ArrayList<>();
+        for (Conversation conversation : userLatestConversations) {
+            List<UserDto> conversationUsers = conversationRepository.getConversationUsers(conversation);
+            int unreadMessagesCount = conversationRepository.getUnreadConversationMessages(conversation);
+            ConversationDto conversationDto = new ConversationDto(conversation.getId(), conversation.getTitle(), conversationUsers, unreadMessagesCount);
+            result.add(conversationDto);
+        }
+        return result;
+    }
+
+    public void addNewConversation(String title, String message, Collection<UserDto> contacts) {
+        if (title == null || title.isEmpty() || title.trim().isEmpty()) {
+            for (UserDto contact : contacts)
+                title += contact.getFirstname() + " " + contact.getLastname() + ";";
+        }
+        User user = userService.getLoggedInUser();
+        Conversation conversation = createConversation(title, user);
+        addUserConversation(conversation, user);
+        for (UserDto contact : contacts) {
+            addUserConversation(conversation, userService.getUserById(contact.getId()));
+        }
+        messageService.addMessage(message, user, conversation);
+    }
+
+    public UsersConversations getUserConversation(User user, Conversation conversation) {
+        return conversationRepository.getUserConversation(user, conversation);
     }
 }

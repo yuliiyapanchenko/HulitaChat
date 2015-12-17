@@ -19,8 +19,12 @@ public class RoleRepository {
 
     @Transactional
     public Role getRoleByName(String role) {
-        return (Role) entityManager.createQuery("from Role where role =:role")
-                .setParameter("role", role)
-                .getSingleResult();
+        try {
+            return entityManager.createQuery("from Role where role =:role", Role.class)
+                    .setParameter("role", role)
+                    .getSingleResult();
+        } catch (Exception ex) {
+            return null;
+        }
     }
 }

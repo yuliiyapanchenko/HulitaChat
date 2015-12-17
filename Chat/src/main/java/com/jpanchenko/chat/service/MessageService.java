@@ -1,10 +1,7 @@
 package com.jpanchenko.chat.service;
 
 import com.jpanchenko.chat.dto.MessageDto;
-import com.jpanchenko.chat.model.Conversation;
-import com.jpanchenko.chat.model.Message;
-import com.jpanchenko.chat.model.NewMessage;
-import com.jpanchenko.chat.model.User;
+import com.jpanchenko.chat.model.*;
 import com.jpanchenko.chat.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,9 +16,14 @@ public class MessageService {
 
     @Autowired
     private MessageRepository messageRepository;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private ConversationService conversationService;
 
-    public List<MessageDto> getNewMessages(User loggedInUser) {
-        return messageRepository.getNewMessages(loggedInUser);
+    public List<MessageDto> getNewMessages() {
+        User user = userService.getLoggedInUser();
+        return messageRepository.getNewMessages(user);
     }
 
     public void addMessage(String message, User user, Conversation conversation) {
@@ -39,6 +41,7 @@ public class MessageService {
 
     private Message createMessage(String message, User user, Conversation conversation) {
         Message msg = new Message();
+        message = "[" + user.getFirstname() + " " + user.getLastname() + "]" + message;
         msg.setMessage(message);
         msg.setUser(user);
         msg.setConversation(conversation);
@@ -50,7 +53,22 @@ public class MessageService {
         messageRepository.removeReadMessage(idMessage);
     }
 
-    public List<MessageDto> getLastMessages(int idConversation, int start, int end) {
-        return messageRepository.getLastMessages(idConversation, start, end);
+    public List<MessageDto> getMessages(int idConversation, int start, int end) {
+        if (!isAuthorized(idConversation))
+            return null;
+        return messageRepository.getMessages(idConversation, start, end);
+    }
+
+    private boolean isAuthorized(int idConversation) {
+        User user = userService.getLoggedInUser();
+        Conversation conversation = conversationService.getConversationById(idConversation);
+        UsersConversations userConversation = conversationService.getUserConversation(user, conversation);
+        return userConversation != null;
+    }
+
+    public void postMessage(int idConversation, String message) {
+        User loggedInUser = userService.getLoggedInUser();
+        Conversation conversation = conversationService.getConversationById(idConversation);
+        addMessage(message, loggedInUser, conversation);
     }
 }
