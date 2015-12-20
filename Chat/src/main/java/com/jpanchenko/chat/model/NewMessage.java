@@ -6,8 +6,8 @@ import javax.persistence.*;
  * Created by jpanchenko on 16.12.2015.
  */
 @Entity
-@Table(name = "new_mesages", schema = "chat")
-public class NewMessage {
+@Table(name = "new_messages", schema = "chat")
+public class NewMessage extends BaseEntity {
     private int id;
     private User user;
     private Message message;

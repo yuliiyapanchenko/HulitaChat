@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -67,7 +66,7 @@ public class ConversationService {
         return result;
     }
 
-    public void addNewConversation(String title, String message, Collection<UserDto> contacts) {
+    public ConversationDto addNewConversation(String title, String message, List<UserDto> contacts) {
         if (title == null || title.isEmpty() || title.trim().isEmpty()) {
             for (UserDto contact : contacts)
                 title += contact.getFirstname() + " " + contact.getLastname() + ";";
@@ -77,8 +76,11 @@ public class ConversationService {
         addUserConversation(conversation, user);
         for (UserDto contact : contacts) {
             addUserConversation(conversation, userService.getUserById(contact.getId()));
+            //TODO: add new message for every contact
         }
         messageService.addMessage(message, user, conversation);
+
+        return new ConversationDto(conversation.getId(), conversation.getTitle(), contacts, 0);
     }
 
     public UsersConversations getUserConversation(User user, Conversation conversation) {

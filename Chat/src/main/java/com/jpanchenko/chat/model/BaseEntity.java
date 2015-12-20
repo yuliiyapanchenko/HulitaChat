@@ -3,24 +3,38 @@ package com.jpanchenko.chat.model;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 
 /**
  * Created by Julia on 05.12.2015.
  */
 @MappedSuperclass
 public abstract class BaseEntity {
+    private DateTime creationTime;
+    private DateTime modificationTime;
 
     @Column(name = "creation_time", nullable = false)
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
-    private DateTime creationTime;
+    public DateTime getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(DateTime creationTime) {
+        this.creationTime = creationTime;
+    }
 
     @Column(name = "modification_time", nullable = false)
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
-    private DateTime modificationTime;
+    public DateTime getModificationTime() {
+        return modificationTime;
+    }
 
-    @Version
-    private long version;
+    public void setModificationTime(DateTime modificationTime) {
+        this.modificationTime = modificationTime;
+    }
 
     @PrePersist
     public void prePersist() {

@@ -6,7 +6,6 @@ import com.jpanchenko.chat.service.ConversationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -20,10 +19,10 @@ public class ConversationController {
     private ConversationService conversationService;
 
     @RequestMapping(path = "/add", method = RequestMethod.POST)
-    public void addConversation(@RequestParam(required = false) String title,
-                                @RequestParam String message,
-                                @RequestBody Collection<UserDto> contacts) {
-        conversationService.addNewConversation(title, message, contacts);
+    public ConversationDto addConversation(@RequestParam(required = false) String title,
+                                           @RequestParam String message,
+                                           @RequestBody List<UserDto> contacts) {
+        return conversationService.addNewConversation(title, message, contacts);
     }
 
     @RequestMapping(path = "/latest", method = RequestMethod.GET)

@@ -11,12 +11,13 @@ import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.connect.web.ProviderSignInUtils;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.context.request.WebRequest;
 
 import javax.inject.Inject;
@@ -25,8 +26,8 @@ import javax.validation.Valid;
 /**
  * Created by Julia on 05.12.2015.
  */
-@RestController
-@RequestMapping(value = "user")
+@Controller
+@SessionAttributes(value = "user")
 public class RegistrationController {
 
     private static final String USER_REGISTRATION_FORM = "user/registrationForm";

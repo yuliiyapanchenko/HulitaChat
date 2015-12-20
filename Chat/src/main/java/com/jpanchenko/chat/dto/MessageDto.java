@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public class MessageDto {
     @XmlElement
-    private int idMsg;
+    private int id;
     @XmlElement
     private int idConversation;
     @XmlElement
@@ -20,19 +20,19 @@ public class MessageDto {
     public MessageDto() {
     }
 
-    public MessageDto(int idMsg, int idConversation, String message, DateTime publishedTime) {
-        this.idMsg = idMsg;
+    public MessageDto(int id, int idConversation, String message, DateTime publishedTime) {
+        this.id = id;
         this.idConversation = idConversation;
         this.message = message;
         this.publishedTime = publishedTime;
     }
 
-    public int getIdMsg() {
-        return idMsg;
+    public int getId() {
+        return id;
     }
 
-    public void setIdMsg(int idMsg) {
-        this.idMsg = idMsg;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getIdConversation() {
@@ -66,7 +66,7 @@ public class MessageDto {
 
         MessageDto that = (MessageDto) o;
 
-        if (idMsg != that.idMsg) return false;
+        if (id != that.id) return false;
         if (idConversation != that.idConversation) return false;
         return message.equals(that.message);
 
@@ -74,7 +74,7 @@ public class MessageDto {
 
     @Override
     public int hashCode() {
-        int result = idMsg;
+        int result = id;
         result = 31 * result + idConversation;
         result = 31 * result + message.hashCode();
         return result;
