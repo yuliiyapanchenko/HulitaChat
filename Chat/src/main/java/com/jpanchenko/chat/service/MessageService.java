@@ -3,6 +3,7 @@ package com.jpanchenko.chat.service;
 import com.jpanchenko.chat.dto.MessageDto;
 import com.jpanchenko.chat.model.*;
 import com.jpanchenko.chat.repository.MessageRepository;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -70,5 +71,11 @@ public class MessageService {
         User loggedInUser = userService.getLoggedInUser();
         Conversation conversation = conversationService.getConversationById(idConversation);
         addMessage(message, loggedInUser, conversation);
+    }
+
+    public List<MessageDto> getUnreadMessages(int idConversation) {
+        if (!isAuthorized(idConversation))
+            return null;
+        return messageRepository.getUnreadMessages(idConversation);
     }
 }

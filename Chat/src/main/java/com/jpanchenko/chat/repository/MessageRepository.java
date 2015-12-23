@@ -53,10 +53,18 @@ public class MessageRepository {
     public List<MessageDto> getMessages(int idConversation, int start, int end) {
         return entityManager.createQuery("select new com.jpanchenko.chat.dto.MessageDto(m.id, m.conversation.id, m.message, m.creationTime) " +
                 "from Message as m where m.conversation.id =:idConversation " +
-                "order by m.creationTime", MessageDto.class)
+                "order by m.creationTime desc ", MessageDto.class)
                 .setParameter("idConversation", idConversation)
                 .setFirstResult(start)
                 .setMaxResults(end)
+                .getResultList();
+    }
+
+    public List<MessageDto> getUnreadMessages(int idConversation) {
+        return entityManager.createQuery("select new com.jpanchenko.chat.dto.MessageDto(m.id, m.conversation.id, m.message.message, m.creationTime) " +
+                "from NewMessage as m where m.conversation.id =:idConversation " +
+                "order by m.creationTime desc ", MessageDto.class)
+                .setParameter("idConversation", idConversation)
                 .getResultList();
     }
 }

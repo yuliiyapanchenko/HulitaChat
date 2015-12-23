@@ -16,7 +16,7 @@
         <!-- Login pages -->
         <form-login login-page="/login" authentication-failure-url="/login-error"
                     login-processing-url="/j_spring_security_check" username-parameter="j_username"
-                    password-parameter="j_password" default-target-url="/main"/>
+                    password-parameter="j_password" default-target-url="/"/>
         <logout logout-success-url="/login" logout-url="/j_spring_security_logout"/>
 
         <!-- Anyone can access these urls -->

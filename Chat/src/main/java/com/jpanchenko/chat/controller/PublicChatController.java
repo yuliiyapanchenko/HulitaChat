@@ -27,6 +27,17 @@ public class PublicChatController {
         this.chatRepository = chatRepository;
     }
 
+    @RequestMapping(method = RequestMethod.POST)
+    public void postMessage(@RequestParam String message) {
+        String userName = SecurityUtil.getCurrentUserFullName();
+        message = "[" + userName + "] " + message;
+        this.chatRepository.addMessage(message);
+        for (Entry<DeferredResult<List<String>>, Integer> entry : this.chatRequests.entrySet()) {
+            List<String> messages = this.chatRepository.getMessages(entry.getValue());
+            entry.getKey().setResult(messages);
+        }
+    }
+
     @RequestMapping(method = RequestMethod.GET)
     public DeferredResult<List<String>> getMessages(@RequestParam int messageIndex) {
         final DeferredResult<List<String>> deferredResult = new DeferredResult<>(null, Collections.emptyList());
@@ -44,14 +55,5 @@ public class PublicChatController {
         return deferredResult;
     }
 
-    @RequestMapping(method = RequestMethod.POST)
-    public void postMessage(@RequestParam String message) {
-        String userName = SecurityUtil.getCurrentUserFullName();
-        message = "[" + userName + "] " + message;
-        this.chatRepository.addMessage(message);
-        for (Entry<DeferredResult<List<String>>, Integer> entry : this.chatRequests.entrySet()) {
-            List<String> messages = this.chatRepository.getMessages(entry.getValue());
-            entry.getKey().setResult(messages);
-        }
-    }
+
 }

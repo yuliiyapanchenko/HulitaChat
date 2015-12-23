@@ -114,29 +114,6 @@ $(document).ready(function () {
 
         ///////////////////////////////////////////////
 
-        function User(id, firstname, lastname) {
-            var self = this;
-            self.id = id;
-            self.firstname = firstname;
-            self.lastname = lastname;
-        }
-
-        function Conversation(id, title, users, unreadMsgsCount) {
-            var self = this;
-            self.id = id;
-            self.title = title;
-            self.users = users;
-            self.unreadMsgsCount = unreadMsgsCount;
-        }
-
-        function Message(id, idConversation, message, publishedTime) {
-            var self = this;
-            self.id = id;
-            self.idConversation = idConversation;
-            self.message = message;
-            self.publishedTime = publishedTime;
-        }
-
         that.contactView = function () {
             setActiveView(that.addContactView);
             that.firstname('');
@@ -218,6 +195,18 @@ $(document).ready(function () {
             setActiveView(that.newConversationView);
         };
 
+        function checkAsRead(message){
+            $.ajax({
+                url: "/chat/messages/read" + "?" +
+                "_csrf=" + $('input[name="_csrf"]').prop('value'),
+                type: "POST",
+                data: "idMessage=" + message.id,
+                error: function (xhr) {
+                    console.error("Failed to mark message as read: status=" + xhr.status + ", statusText=" + xhr.statusText);
+                }
+            });
+        }
+
         function pollForConversationMessages() {
             var form = $("#getPrivateMessageForm");
             that.activePollingPrivateXhr($.ajax({
@@ -228,6 +217,7 @@ $(document).ready(function () {
                 success: function (messages) {
                     for (var i = 0; i < messages.length; i++) {
                         that.privateChatContent(that.privateChatContent() + messages[i].message + "\n");
+                        checkAsRead(messages[i]);
                     }
                 },
                 error: function (xhr) {
