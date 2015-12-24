@@ -16,12 +16,17 @@ public class InMemoryChatRepository implements ChatRepository {
         if (this.messages.isEmpty()) {
             return Collections.emptyList();
         }
-        Assert.isTrue((index >= 0) && (index <= this.messages.size()), "Invalid message index" + index);
+        Assert.isTrue((index >= 0) && (index <= this.messages.size()), "Invalid message index " + index);
         return this.messages.subList(index, this.messages.size());
     }
 
     public void addMessage(String message) {
         this.messages.add(message);
+    }
+
+    @Override
+    public List<String> getLastMessage() {
+        return this.messages.subList(this.messages.size()-1, this.messages.size());
     }
 
 }

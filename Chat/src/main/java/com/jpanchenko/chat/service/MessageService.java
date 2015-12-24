@@ -1,9 +1,9 @@
 package com.jpanchenko.chat.service;
 
 import com.jpanchenko.chat.dto.MessageDto;
+import com.jpanchenko.chat.dto.UserDto;
 import com.jpanchenko.chat.model.*;
 import com.jpanchenko.chat.repository.MessageRepository;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,15 +29,18 @@ public class MessageService {
 
     public void addMessage(String message, User user, Conversation conversation) {
         Message msg = createMessage(message, user, conversation);
-        createNewMessage(user, conversation, msg);
+        createUnreadMessages(conversation, msg);
     }
 
-    private void createNewMessage(User user, Conversation conversation, Message msg) {
-        NewMessage newMessage = new NewMessage();
-        newMessage.setConversation(conversation);
-        newMessage.setUser(user);
-        newMessage.setMessage(msg);
-        messageRepository.saveNewMessage(newMessage);
+    private void createUnreadMessages(Conversation conversation, Message msg) {
+        List<User> users = conversationService.getConversationUsers(conversation);
+        for (User user : users) {
+            NewMessage newMessage = new NewMessage();
+            newMessage.setConversation(conversation);
+            newMessage.setUser(user);
+            newMessage.setMessage(msg);
+            messageRepository.saveNewMessage(newMessage);
+        }
     }
 
     private Message createMessage(String message, User user, Conversation conversation) {
@@ -51,7 +54,8 @@ public class MessageService {
     }
 
     public void markMessageAsRead(int idMessage) {
-        messageRepository.removeReadMessage(idMessage);
+        User user = userService.getLoggedInUser();
+        messageRepository.removeReadMessage(idMessage, user);
     }
 
     public List<MessageDto> getMessages(int idConversation, int start, int end) {
@@ -61,6 +65,7 @@ public class MessageService {
     }
 
     private boolean isAuthorized(int idConversation) {
+        //TODO: send 401 Unauthorized
         User user = userService.getLoggedInUser();
         Conversation conversation = conversationService.getConversationById(idConversation);
         UsersConversations userConversation = conversationService.getUserConversation(user, conversation);
@@ -76,6 +81,10 @@ public class MessageService {
     public List<MessageDto> getUnreadMessages(int idConversation) {
         if (!isAuthorized(idConversation))
             return null;
-        return messageRepository.getUnreadMessages(idConversation);
+        return messageRepository.getUnreadMessages(idConversation, userService.getLoggedInUser());
+    }
+
+    public List<MessageDto> getUnreadMessages(int idConversation, User user) {
+        return messageRepository.getUnreadMessages(idConversation, user);
     }
 }

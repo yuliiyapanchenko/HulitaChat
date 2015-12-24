@@ -1,7 +1,9 @@
 package com.jpanchenko.chat.controller;
 
 import com.jpanchenko.chat.dto.MessageDto;
+import com.jpanchenko.chat.model.User;
 import com.jpanchenko.chat.service.MessageService;
+import com.jpanchenko.chat.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -11,7 +13,8 @@ import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by jpanchenko on 16.12.2015.
@@ -22,8 +25,10 @@ public class MessagesController {
 
     @Autowired
     private MessageService messageService;
+    @Autowired
+    private UserService userService;
 
-    private final List<DeferredResult<List<MessageDto>>> chatRequests = new CopyOnWriteArrayList<>();
+    private final Map<User, DeferredResult<List<MessageDto>>> chatRequests = new ConcurrentHashMap<>();
 
     @RequestMapping(path = "/new", method = RequestMethod.GET)
     public List<MessageDto> getNewMessages() {
@@ -33,9 +38,9 @@ public class MessagesController {
     @RequestMapping(path = "/post", method = RequestMethod.POST)
     public void postMessage(@RequestParam int idConversation, @RequestParam String message) {
         messageService.postMessage(idConversation, message);
-        for (DeferredResult<List<MessageDto>> entry : this.chatRequests) {
-            List<MessageDto> messages = this.messageService.getMessages(idConversation, 1, 1);
-            entry.setResult(messages);
+        for (Map.Entry<User, DeferredResult<List<MessageDto>>> entry : this.chatRequests.entrySet()) {
+            List<MessageDto> messages = this.messageService.getUnreadMessages(idConversation, entry.getKey());
+            entry.getValue().setResult(messages);
         }
     }
 
@@ -54,7 +59,7 @@ public class MessagesController {
     @RequestMapping(path = "/getUnreadMessages", method = RequestMethod.GET)
     public DeferredResult<List<MessageDto>> getUnreadMessages(@RequestParam int idConversation) {
         final DeferredResult<List<MessageDto>> deferredResult = new DeferredResult<>(null, Collections.emptyList());
-        this.chatRequests.add(deferredResult);
+        this.chatRequests.put(userService.getLoggedInUser(), deferredResult);
         deferredResult.onCompletion(new Runnable() {
             @Override
             public void run() {

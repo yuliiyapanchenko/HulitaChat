@@ -15,7 +15,7 @@ public class Conversation extends BaseEntity {
     private User admin;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     public int getId() {
         return id;

@@ -58,8 +58,8 @@ public class ConversationService {
         List<Conversation> userLatestConversations = conversationRepository.getUserLatestConversations(user, start, end);
         List<ConversationDto> result = new ArrayList<>();
         for (Conversation conversation : userLatestConversations) {
-            List<UserDto> conversationUsers = conversationRepository.getConversationUsers(conversation);
-            int unreadMessagesCount = conversationRepository.getUnreadConversationMessages(conversation);
+            List<UserDto> conversationUsers = conversationRepository.getConversationUserDtos(conversation);
+            int unreadMessagesCount = conversationRepository.getUnreadConversationMessages(conversation, user);
             ConversationDto conversationDto = new ConversationDto(conversation.getId(), conversation.getTitle(), conversationUsers, unreadMessagesCount);
             result.add(conversationDto);
         }
@@ -76,7 +76,6 @@ public class ConversationService {
         addUserConversation(conversation, user);
         for (UserDto contact : contacts) {
             addUserConversation(conversation, userService.getUserById(contact.getId()));
-            //TODO: add new message for every contact
         }
         messageService.addMessage(message, user, conversation);
 
@@ -85,5 +84,9 @@ public class ConversationService {
 
     public UsersConversations getUserConversation(User user, Conversation conversation) {
         return conversationRepository.getUserConversation(user, conversation);
+    }
+
+    public List<User> getConversationUsers(Conversation conversation) {
+        return conversationRepository.getConversationUsers(conversation);
     }
 }

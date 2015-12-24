@@ -6,6 +6,7 @@ import com.jpanchenko.chat.dto.security.DaoUserDetails;
 import com.jpanchenko.chat.dto.security.RegistrationForm;
 import com.jpanchenko.chat.exception.DuplicateEmailException;
 import com.jpanchenko.chat.model.Authority;
+import com.jpanchenko.chat.model.Conversation;
 import com.jpanchenko.chat.model.User;
 import com.jpanchenko.chat.model.UserSigInProvider;
 import com.jpanchenko.chat.repository.UserRepository;
@@ -25,7 +26,6 @@ import org.springframework.validation.FieldError;
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 

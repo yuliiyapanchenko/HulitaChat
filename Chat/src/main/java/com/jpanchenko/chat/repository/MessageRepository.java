@@ -44,9 +44,16 @@ public class MessageRepository {
     }
 
     @Transactional
-    public void removeReadMessage(int idMessage) {
-        NewMessage message = entityManager.find(NewMessage.class, idMessage);
-        entityManager.remove(message);
+    public void removeReadMessage(int idMessage, User user) {
+        try {
+            NewMessage message = entityManager.createQuery("from NewMessage where user =:user and id =:idMessage", NewMessage.class)
+                    .setParameter("user", user)
+                    .setParameter("idMessage", idMessage)
+                    .getSingleResult();
+            if (message != null)
+                entityManager.remove(message);
+        } catch (Exception ignored) {
+        }
     }
 
     @Transactional
@@ -60,11 +67,13 @@ public class MessageRepository {
                 .getResultList();
     }
 
-    public List<MessageDto> getUnreadMessages(int idConversation) {
+    @Transactional
+    public List<MessageDto> getUnreadMessages(int idConversation, User user) {
         return entityManager.createQuery("select new com.jpanchenko.chat.dto.MessageDto(m.id, m.conversation.id, m.message.message, m.creationTime) " +
-                "from NewMessage as m where m.conversation.id =:idConversation " +
+                "from NewMessage as m where m.conversation.id =:idConversation and m.user =:user " +
                 "order by m.creationTime desc ", MessageDto.class)
                 .setParameter("idConversation", idConversation)
+                .setParameter("user", user)
                 .getResultList();
     }
 }

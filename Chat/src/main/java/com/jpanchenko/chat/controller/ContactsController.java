@@ -2,7 +2,6 @@ package com.jpanchenko.chat.controller;
 
 import com.jpanchenko.chat.dto.UserDto;
 import com.jpanchenko.chat.service.ContactsService;
-import com.jpanchenko.chat.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

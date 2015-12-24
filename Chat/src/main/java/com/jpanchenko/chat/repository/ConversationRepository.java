@@ -41,10 +41,10 @@ public class ConversationRepository {
     @Transactional
     public List<Conversation> getUserLatestConversations(User user, int start, int end) {
         Iterator iterator = entityManager.createQuery("select m.conversation, max (m.creationTime) as created_time " +
-                "from Message as m " +
-                "join UsersConversations as uc on uc.conversation.id = m.conversation.id and uc.user.id =:userId " +
+                "from Message as m, UsersConversations as uc " +
+                "where uc.conversation.id = m.conversation.id and uc.user.id =:userId " +
                 "group by m.conversation.id " +
-                "order by created_time")
+                "order by created_time desc ")
                 .setParameter("userId", user.getId())
                 .setFirstResult(start)
                 .setMaxResults(end)
@@ -61,10 +61,11 @@ public class ConversationRepository {
     }
 
     @Transactional
-    public int getUnreadConversationMessages(Conversation conversation) {
+    public int getUnreadConversationMessages(Conversation conversation, User user) {
         try {
-            Long result = (Long) entityManager.createQuery("select count(*) from NewMessage where conversation =:conversation")
+            Long result = (Long) entityManager.createQuery("select count(*) from NewMessage where conversation =:conversation and user =:user")
                     .setParameter("conversation", conversation)
+                    .setParameter("user", user)
                     .getSingleResult();
             return result.intValue();
         } catch (Exception ex) {
@@ -73,10 +74,19 @@ public class ConversationRepository {
     }
 
     @Transactional
-    public List<UserDto> getConversationUsers(Conversation conversation) {
+    public List<UserDto> getConversationUserDtos(Conversation conversation) {
         return entityManager.createQuery("select new com.jpanchenko.chat.dto.UserDto(uc.user.id, uc.user.firstname, uc.user.lastname) " +
                 "from UsersConversations as uc " +
                 "where uc.conversation =:conversation", UserDto.class)
+                .setParameter("conversation", conversation)
+                .getResultList();
+    }
+
+    @Transactional
+    public List<User> getConversationUsers(Conversation conversation) {
+        return entityManager.createQuery("select uc.user " +
+                "from UsersConversations as uc " +
+                "where uc.conversation =:conversation", User.class)
                 .setParameter("conversation", conversation)
                 .getResultList();
     }

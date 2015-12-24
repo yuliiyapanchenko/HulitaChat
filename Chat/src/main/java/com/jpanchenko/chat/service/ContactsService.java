@@ -4,7 +4,6 @@ import com.jpanchenko.chat.dto.UserDto;
 import com.jpanchenko.chat.model.Contact;
 import com.jpanchenko.chat.model.User;
 import com.jpanchenko.chat.repository.ContactsRepository;
-import com.jpanchenko.chat.utils.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

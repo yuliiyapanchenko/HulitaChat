@@ -11,16 +11,14 @@ import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @RestController
 @RequestMapping("/public/chat")
 public class PublicChatController {
 
     private final ChatRepository chatRepository;
-    private final Map<DeferredResult<List<String>>, Integer> chatRequests = new ConcurrentHashMap<>();
+    private final List<DeferredResult<List<String>>> chatRequests = new CopyOnWriteArrayList<>();
 
     @Autowired
     public PublicChatController(ChatRepository chatRepository) {
@@ -32,16 +30,16 @@ public class PublicChatController {
         String userName = SecurityUtil.getCurrentUserFullName();
         message = "[" + userName + "] " + message;
         this.chatRepository.addMessage(message);
-        for (Entry<DeferredResult<List<String>>, Integer> entry : this.chatRequests.entrySet()) {
-            List<String> messages = this.chatRepository.getMessages(entry.getValue());
-            entry.getKey().setResult(messages);
+        for (DeferredResult<List<String>> entry : this.chatRequests) {
+            List<String> messages = this.chatRepository.getLastMessage();
+            entry.setResult(messages);
         }
     }
 
     @RequestMapping(method = RequestMethod.GET)
     public DeferredResult<List<String>> getMessages(@RequestParam int messageIndex) {
         final DeferredResult<List<String>> deferredResult = new DeferredResult<>(null, Collections.emptyList());
-        this.chatRequests.put(deferredResult, messageIndex);
+        this.chatRequests.add(deferredResult);
         deferredResult.onCompletion(new Runnable() {
             @Override
             public void run() {

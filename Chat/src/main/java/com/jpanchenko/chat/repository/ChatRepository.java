@@ -8,4 +8,5 @@ public interface ChatRepository {
 
     void addMessage(String message);
 
+    List<String> getLastMessage();
 }

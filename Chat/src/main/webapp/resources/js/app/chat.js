@@ -10,12 +10,14 @@ $(document).ready(function () {
         that.addContactView = ko.observable(null);
         that.userContactsView = ko.observable(null);
         that.newConversationView = ko.observable(null);
+        that.conversationsListView = ko.observable(null);
         that.views = ko.observableArray([
             that.publicChatView,
             that.privateChatView,
             that.addContactView,
             that.userContactsView,
-            that.newConversationView]);
+            that.newConversationView,
+            that.conversationsListView]);
 
         function setActiveView(view) {
             that.views().forEach(function (v) {
@@ -39,6 +41,8 @@ $(document).ready(function () {
         that.userContacts = ko.observableArray();
 
         //Conversations
+        that.activePollingConversationsXhr = pollForConversations();
+        that.userConversations = ko.observableArray();
         that.selectedContacts = ko.observableArray();
         that.title = ko.observable(' ');
         that.firstMessage = ko.observable('');
@@ -48,11 +52,13 @@ $(document).ready(function () {
         that.activeConversation = ko.observable(null);
 
         var keepPolling = false;
+        var keepPrivatePolling = false;
 
         ///////////////////////////////////////////////
         that.joinChat = function () {
             setActiveView(that.publicChatView);
             keepPolling = true;
+            keepPrivatePolling = false;
             pollForMessages();
         };
 
@@ -62,9 +68,9 @@ $(document).ready(function () {
             }
             var form = $("#joinChatForm");
             that.activePollingXhr($.ajax({
-                url: form.attr("action"),
+                url: "/chat/public/chat",
                 type: "GET",
-                data: form.serialize(),
+                data: "messageIndex=" + that.messageIndex(),
                 cache: false,
                 success: function (messages) {
                     for (var i = 0; i < messages.length; i++) {
@@ -120,12 +126,14 @@ $(document).ready(function () {
             that.lastname('');
             that.users(null);
             that.leaveChat();
+            keepPrivatePolling = false;
         };
 
         that.getUserContactsView = function () {
             setActiveView(that.userContactsView);
             that.leaveChat();
             that.getUserContacts();
+            keepPrivatePolling = false;
         };
 
         that.searchContact = function () {
@@ -165,7 +173,7 @@ $(document).ready(function () {
                     });
                 },
                 error: function (xhr) {
-                    console.error("Error adding contact: status=" + xhr.status + ", statusText=" + xhr.statusText);
+                    console.error("Error getting contacts: status=" + xhr.status + ", statusText=" + xhr.statusText);
                 }
             });
         };
@@ -192,10 +200,13 @@ $(document).ready(function () {
         that.newConversationForm = function () {
             that.leaveChat();
             that.getUserContacts();
+            that.title('');
+            that.firstMessage('');
             setActiveView(that.newConversationView);
+            keepPrivatePolling = false;
         };
 
-        function checkAsRead(message){
+        function checkAsRead(message) {
             $.ajax({
                 url: "/chat/messages/read" + "?" +
                 "_csrf=" + $('input[name="_csrf"]').prop('value'),
@@ -208,6 +219,8 @@ $(document).ready(function () {
         }
 
         function pollForConversationMessages() {
+            if (!keepPrivatePolling)
+                return;
             var form = $("#getPrivateMessageForm");
             that.activePollingPrivateXhr($.ajax({
                 url: form.attr("action"),
@@ -215,20 +228,22 @@ $(document).ready(function () {
                 data: "idConversation=" + that.activeConversation().id,
                 cache: false,
                 success: function (messages) {
-                    for (var i = 0; i < messages.length; i++) {
-                        that.privateChatContent(that.privateChatContent() + messages[i].message + "\n");
-                        checkAsRead(messages[i]);
+                    if (messages != null && messages != undefined) {
+                        for (var i = 0; i < messages.length; i++) {
+                            that.privateChatContent(that.privateChatContent() + messages[i].message + "\n");
+                            checkAsRead(messages[i]);
+                        }
                     }
                 },
                 error: function (xhr) {
                     if (xhr.statusText != "abort" && xhr.status != 503) {
-                        console.error("Unable to retrieve chat messages. Chat ended.");
+                        console.error("Unable to retrieve new messages.");
                     }
                 },
                 complete: pollForConversationMessages
             }));
             $('#privateMessage').focus();
-        };
+        }
 
         that.addConversation = function () {
             if (that.selectedContacts == null || that.selectedContacts().length == 0) {
@@ -245,10 +260,12 @@ $(document).ready(function () {
                 contentType: 'application/json',
                 data: JSON.stringify(that.selectedContacts()),
                 success: function (conversation) {
+                    that.privateChatContent('');
                     that.title(conversation.title);
                     that.activeConversation(new Conversation(conversation.id, conversation.title, conversation.users, conversation.unreadMsgsCount));
-                    pollForConversationMessages();
                     setActiveView(that.privateChatView);
+                    keepPrivatePolling = true;
+                    pollForConversationMessages();
                 },
                 error: function (xhr) {
                     console.error("Error adding conversation: status=" + xhr.status + ", statusText=" + xhr.statusText);
@@ -260,23 +277,82 @@ $(document).ready(function () {
             if (that.privateMessage().trim() != '') {
                 var form = $("#postPrivateMessageForm");
                 $.ajax({
-                    url: form.attr("action") + "?_csrf=" + $('input[name="_csrf"]').prop('value'),
-                    type: "POST",
-                    data: "idConversation=" + that.activeConversation().id +
-                    "message=" + $("#postPrivateMessageForm input[name=privateMessage]").val(),
-                    error: function (xhr) {
-                        console.error("Error posting chat message: status=" + xhr.status + ", statusText=" + xhr.statusText);
+                        url: form.attr("action") + "?" +
+                        "idConversation=" + that.activeConversation().id + "&" +
+                        "message=" + that.privateMessage() + "&" +
+                        "_csrf=" + $('input[name="_csrf"]').prop('value'),
+                        type: "POST",
+                        error: function (xhr) {
+                            console.error("Error posting chat message: status=" + xhr.status + ", statusText=" + xhr.statusText);
+                        }
                     }
-                });
+                );
                 that.privateMessage('');
             }
         };
 
+        function pollForConversations() {
+            return $.ajax({
+                url: "/chat/conversations/latest",
+                type: "GET",
+                cache: false,
+                success: function (conversations) {
+                    if (conversations.length > 0) {
+                        that.userConversations([]);
+                        setActiveView(that.conversationsListView);
+                        for (var i = 0; i < conversations.length; i++) {
+                            that.userConversations.push(new Conversation(conversations[i].id, conversations[i].title,
+                                conversations[i].users, conversations[i].unreadMsgsCount));
+                        }
+                    }
+                },
+                error: function (xhr) {
+                    if (xhr.statusText != "abort" && xhr.status != 503) {
+                        console.error("Unable to retrieve conversations.");
+                    }
+                }
+            })
+        }
+
+        that.selectConversation = function () {
+            setActiveView(that.privateChatView);
+            that.activeConversation(this);
+            that.privateChatContent('');
+            $.ajax({
+                url: "/chat/messages/get",
+                type: "GET",
+                data: "idConversation=" + this.id,
+                success: function (messages) {
+                    if (messages != null && messages != undefined) {
+                        for (var i = 0; i < messages.length; i++) {
+                            that.privateChatContent(that.privateChatContent() + messages[i].message + "\n");
+                            checkAsRead(messages[i]);
+                        }
+                    }
+                    keepPrivatePolling = true;
+                    pollForConversationMessages()
+                },
+                error: function (xhr) {
+                    console.error("Error getting messages for conversation: status=" + xhr.status + ", statusText=" + xhr.statusText);
+                }
+            });
+        };
+
+        that.conversationsView = function () {
+            pollForConversations();
+            setActiveView(that.conversationsListView);
+        }
     }
 
-    //Activate knockout.js
+//Activate knockout.js
     ko.applyBindings(new ChatViewModel());
-
 });
 
 
+function userListString(users) {
+    var str = '';
+    users.forEach(function (user) {
+        str += user.firstname + " " + user.lastname + ";";
+    });
+    return str;
+}
