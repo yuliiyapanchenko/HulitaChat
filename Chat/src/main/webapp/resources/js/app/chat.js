@@ -20,6 +20,8 @@ $(document).ready(function () {
             that.conversationsListView]);
 
         function setActiveView(view) {
+            that.leavePrivateChat();
+            that.leaveChat();
             that.views().forEach(function (v) {
                 if (v == view)
                     v(true);
@@ -27,6 +29,45 @@ $(document).ready(function () {
                     v(null);
             });
         }
+
+        that.leaveChat = function () {
+            that.publicChatView(null);
+            that.activePollingXhr(null);
+            resetUI();
+        };
+
+        that.leavePrivateChat = function () {
+            keepPrivatePolling = false;
+            that.privateChatContent('');
+            that.activeConversation(null);
+            if (that.activePollingPrivateXhr() != null)
+                that.activePollingPrivateXhr().abort();
+            that.activePollingPrivateXhr(null);
+        };
+
+        that.newConversationForm = function () {
+            that.getUserContacts();
+            that.title('');
+            that.firstMessage('');
+            setActiveView(that.newConversationView);
+        };
+
+        that.conversationsView = function () {
+            pollForConversations();
+            setActiveView(that.conversationsListView);
+        };
+
+        that.contactView = function () {
+            setActiveView(that.addContactView);
+            that.firstname('');
+            that.lastname('');
+            that.users(null);
+        };
+
+        that.getUserContactsView = function () {
+            setActiveView(that.userContactsView);
+            that.getUserContacts();
+        };
 
         // Public chat
         that.chatContent = ko.observable('');
@@ -77,6 +118,9 @@ $(document).ready(function () {
                         that.chatContent(that.chatContent() + messages[i] + "\n");
                         that.messageIndex(that.messageIndex() + 1);
                     }
+                    $("#publicTextarea").animate({
+                        scrollTop: $("#publicTextarea")[0].scrollHeight - $("#publicTextarea").height()
+                    }, 1);
                 },
                 error: function (xhr) {
                     if (xhr.statusText != "abort" && xhr.status != 503) {
@@ -104,12 +148,6 @@ $(document).ready(function () {
             }
         };
 
-        that.leaveChat = function () {
-            that.publicChatView(null);
-            that.activePollingXhr(null);
-            resetUI();
-        };
-
         function resetUI() {
             keepPolling = false;
             that.activePollingXhr(null);
@@ -119,22 +157,6 @@ $(document).ready(function () {
         }
 
         ///////////////////////////////////////////////
-
-        that.contactView = function () {
-            setActiveView(that.addContactView);
-            that.firstname('');
-            that.lastname('');
-            that.users(null);
-            that.leaveChat();
-            keepPrivatePolling = false;
-        };
-
-        that.getUserContactsView = function () {
-            setActiveView(that.userContactsView);
-            that.leaveChat();
-            that.getUserContacts();
-            keepPrivatePolling = false;
-        };
 
         that.searchContact = function () {
             if (that.firstname().trim() != '' || that.lastname().trim() != '') {
@@ -197,15 +219,6 @@ $(document).ready(function () {
 
         ///////////////////////////////////////////////
 
-        that.newConversationForm = function () {
-            that.leaveChat();
-            that.getUserContacts();
-            that.title('');
-            that.firstMessage('');
-            setActiveView(that.newConversationView);
-            keepPrivatePolling = false;
-        };
-
         function checkAsRead(message) {
             $.ajax({
                 url: "/chat/messages/read" + "?" +
@@ -229,15 +242,20 @@ $(document).ready(function () {
                 cache: false,
                 success: function (messages) {
                     if (messages != null && messages != undefined) {
-                        for (var i = 0; i < messages.length; i++) {
-                            that.privateChatContent(that.privateChatContent() + messages[i].message + "\n");
+                        for (var i = messages.length - 1; i >= 0; i--) {
+                            var msg = new Message(messages[i]);
+                            that.privateChatContent(that.privateChatContent() + msg.getTime() + " " + msg.message + "\n");
                             checkAsRead(messages[i]);
                         }
                     }
+                    $("#privateTextarea").animate({
+                        scrollTop: $("#privateTextarea")[0].scrollHeight - $("#privateTextarea").height()
+                    }, 1);
                 },
                 error: function (xhr) {
-                    if (xhr.statusText != "abort" && xhr.status != 503) {
+                    if (xhr.statusText != "abort" && xhr.status != 503 && xhr.status != 500) {
                         console.error("Unable to retrieve new messages.");
+                        keepPrivatePolling = false;
                     }
                 },
                 complete: pollForConversationMessages
@@ -260,10 +278,8 @@ $(document).ready(function () {
                 contentType: 'application/json',
                 data: JSON.stringify(that.selectedContacts()),
                 success: function (conversation) {
-                    that.privateChatContent('');
-                    that.title(conversation.title);
-                    that.activeConversation(new Conversation(conversation.id, conversation.title, conversation.users, conversation.unreadMsgsCount));
                     setActiveView(that.privateChatView);
+                    that.activeConversation(new Conversation(conversation.id, conversation.title, conversation.users, conversation.unreadMsgsCount));
                     keepPrivatePolling = true;
                     pollForConversationMessages();
                 },
@@ -317,18 +333,20 @@ $(document).ready(function () {
         that.selectConversation = function () {
             setActiveView(that.privateChatView);
             that.activeConversation(this);
-            that.privateChatContent('');
             $.ajax({
                 url: "/chat/messages/get",
                 type: "GET",
                 data: "idConversation=" + this.id,
                 success: function (messages) {
                     if (messages != null && messages != undefined) {
-                        for (var i = 0; i < messages.length; i++) {
-                            that.privateChatContent(that.privateChatContent() + messages[i].message + "\n");
-                            checkAsRead(messages[i]);
+                        for (var i = messages.length - 1; i >= 0; i--) {
+                            var msg = new Message(messages[i]);
+                            that.privateChatContent(that.privateChatContent() + msg.getTime() + " " + msg.message + "\n");
                         }
                     }
+                    $("#privateTextarea").animate({
+                        scrollTop: $("#privateTextarea")[0].scrollHeight - $("#privateTextarea").height()
+                    }, 1);
                     keepPrivatePolling = true;
                     pollForConversationMessages()
                 },
@@ -337,11 +355,6 @@ $(document).ready(function () {
                 }
             });
         };
-
-        that.conversationsView = function () {
-            pollForConversations();
-            setActiveView(that.conversationsListView);
-        }
     }
 
 //Activate knockout.js
@@ -352,7 +365,7 @@ $(document).ready(function () {
 function userListString(users) {
     var str = '';
     users.forEach(function (user) {
-        str += user.firstname + " " + user.lastname + ";";
+        str += user.firstname + " " + user.lastname + "; ";
     });
     return str;
 }

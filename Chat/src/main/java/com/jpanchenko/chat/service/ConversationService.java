@@ -67,11 +67,8 @@ public class ConversationService {
     }
 
     public ConversationDto addNewConversation(String title, String message, List<UserDto> contacts) {
-        if (title == null || title.isEmpty() || title.trim().isEmpty()) {
-            for (UserDto contact : contacts)
-                title += contact.getFirstname() + " " + contact.getLastname() + ";";
-        }
         User user = userService.getLoggedInUser();
+        title = getConversationTitle(title, contacts, user);
         Conversation conversation = createConversation(title, user);
         addUserConversation(conversation, user);
         for (UserDto contact : contacts) {
@@ -80,6 +77,20 @@ public class ConversationService {
         messageService.addMessage(message, user, conversation);
 
         return new ConversationDto(conversation.getId(), conversation.getTitle(), contacts, 0);
+    }
+
+    private String getConversationTitle(String title, List<UserDto> contacts, User user) {
+        if (title == null || title.isEmpty() || title.trim().isEmpty()) {
+            if (contacts.size() == 1) {
+                title = "Conversation with " + user.getFirstname() + " " + user.getLastname() + "; ";
+                for (UserDto contact : contacts)
+                    title += contact.getFirstname() + " " + contact.getLastname() + "; ";
+            } else {
+                for (UserDto contact : contacts)
+                    title += contact.getFirstname() + " " + contact.getLastname() + "; ";
+            }
+        }
+        return title;
     }
 
     public UsersConversations getUserConversation(User user, Conversation conversation) {

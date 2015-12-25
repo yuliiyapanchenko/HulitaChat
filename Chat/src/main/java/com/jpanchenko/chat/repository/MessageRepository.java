@@ -1,6 +1,7 @@
 package com.jpanchenko.chat.repository;
 
 import com.jpanchenko.chat.dto.MessageDto;
+import com.jpanchenko.chat.model.Conversation;
 import com.jpanchenko.chat.model.Message;
 import com.jpanchenko.chat.model.NewMessage;
 import com.jpanchenko.chat.model.User;
@@ -57,22 +58,24 @@ public class MessageRepository {
     }
 
     @Transactional
-    public List<MessageDto> getMessages(int idConversation, int start, int end) {
+    public List<MessageDto> getMessages(int idConversation, User user, int start, int end) {
         return entityManager.createQuery("select new com.jpanchenko.chat.dto.MessageDto(m.id, m.conversation.id, m.message, m.creationTime) " +
-                "from Message as m where m.conversation.id =:idConversation " +
+                "from Message as m where m.conversation.id =:idConversation and m.id not in " +
+                "(select nm.message.id from NewMessage as nm where nm.conversation.id =:idConversation and nm.user =:user) " +
                 "order by m.creationTime desc ", MessageDto.class)
                 .setParameter("idConversation", idConversation)
+                .setParameter("user", user)
                 .setFirstResult(start)
                 .setMaxResults(end)
                 .getResultList();
     }
 
     @Transactional
-    public List<MessageDto> getUnreadMessages(int idConversation, User user) {
+    public List<MessageDto> getUnreadMessages(Conversation conversation, User user) {
         return entityManager.createQuery("select new com.jpanchenko.chat.dto.MessageDto(m.id, m.conversation.id, m.message.message, m.creationTime) " +
-                "from NewMessage as m where m.conversation.id =:idConversation and m.user =:user " +
+                "from NewMessage as m where m.conversation =:conversation and m.user =:user " +
                 "order by m.creationTime desc ", MessageDto.class)
-                .setParameter("idConversation", idConversation)
+                .setParameter("conversation", conversation)
                 .setParameter("user", user)
                 .getResultList();
     }

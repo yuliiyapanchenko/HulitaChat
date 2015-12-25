@@ -1,7 +1,6 @@
 package com.jpanchenko.chat.service;
 
 import com.jpanchenko.chat.dto.MessageDto;
-import com.jpanchenko.chat.dto.UserDto;
 import com.jpanchenko.chat.model.*;
 import com.jpanchenko.chat.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +44,7 @@ public class MessageService {
 
     private Message createMessage(String message, User user, Conversation conversation) {
         Message msg = new Message();
-        message = "[" + user.getFirstname() + " " + user.getLastname() + "]" + message;
+        message = "[" + user.getFirstname() + " " + user.getLastname() + "] " + message;
         msg.setMessage(message);
         msg.setUser(user);
         msg.setConversation(conversation);
@@ -61,7 +60,7 @@ public class MessageService {
     public List<MessageDto> getMessages(int idConversation, int start, int end) {
         if (!isAuthorized(idConversation))
             return null;
-        return messageRepository.getMessages(idConversation, start, end);
+        return messageRepository.getMessages(idConversation, userService.getLoggedInUser(), start, end);
     }
 
     private boolean isAuthorized(int idConversation) {
@@ -72,19 +71,21 @@ public class MessageService {
         return userConversation != null;
     }
 
+    private boolean isAuthorized(User user, Conversation conversation) {
+        //TODO: send 401 Unauthorized
+        UsersConversations userConversation = conversationService.getUserConversation(user, conversation);
+        return userConversation != null;
+    }
+
     public void postMessage(int idConversation, String message) {
         User loggedInUser = userService.getLoggedInUser();
         Conversation conversation = conversationService.getConversationById(idConversation);
         addMessage(message, loggedInUser, conversation);
     }
 
-    public List<MessageDto> getUnreadMessages(int idConversation) {
-        if (!isAuthorized(idConversation))
+    public List<MessageDto> getUnreadMessages(Conversation conversation, User user) {
+        if (!isAuthorized(user, conversation))
             return null;
-        return messageRepository.getUnreadMessages(idConversation, userService.getLoggedInUser());
-    }
-
-    public List<MessageDto> getUnreadMessages(int idConversation, User user) {
-        return messageRepository.getUnreadMessages(idConversation, user);
+        return messageRepository.getUnreadMessages(conversation, user);
     }
 }

@@ -21,7 +21,7 @@
     </div>
 
     <div class="panel-body" data-bind="visible: activePollingXhr() != null">
-        <textarea class="form-control" rows="10" cols="60" readonly="readonly" data-bind="text: chatContent"></textarea>
+        <textarea id="publicTextarea" class="form-control" rows="10" cols="60" readonly="readonly" data-bind="text: chatContent"></textarea>
     </div>
 
     <form id="postMessageForm" th:action="@{/public/chat}" data-bind="visible: activePollingXhr() != null">

@@ -23,11 +23,10 @@
 
                 <div class="row">
                     <div class="form-group col-lg-4">
-                        <ul data-bind="foreach: userConversations">
-                            <li data-bind="click: $parent.selectConversation">
-                                <a href="" data-bind="text: title">
-                                    <span class="badge" data-bind="text: unreadMsgsCount"> </span>
-                                </a>
+                        <ul data-bind="foreach: userConversations" class="list-group">
+                            <li data-bind="click: $parent.selectConversation" class="list-group-item">
+                                <span class="badge" data-bind="text: unreadMsgsCount"> </span>
+                                <span data-bind="text: title"></span>
                             </li>
                         </ul>
                     </div>
@@ -91,15 +90,20 @@
 </div>
 
 <div th:fragment="privateChatView" data-bind="visible: privateChatView() != null">
-    <div class="page-header">
-        <h1 data-bind="text: activeConversation()!=null ? activeConversation().title : ''"></h1>
-
-        <h2 data-bind="text: activeConversation()==null ? '' : userListString(activeConversation().users)"></h2>
+    <div class="panel-body">
+        <div class="row">
+            <h1 class="form-group col-lg-4"
+                data-bind="text: activeConversation()!=null ? activeConversation().title : ''"></h1>
+        </div>
+        <div class="row">
+            <span class="form-group col-lg-4"
+                  data-bind="text: activeConversation()==null ? '' : 'Participants: ' + userListString(activeConversation().users)"></span>
+        </div>
     </div>
 
     <div class="panel-body" data-bind="visible: activePollingPrivateXhr() != null">
         <form id="getPrivateMessageForm" th:action="@{/messages/getUnreadMessages}">
-            <textarea class="form-control" rows="10" cols="60" readonly="readonly"
+            <textarea id="privateTextarea" class="form-control" rows="10" cols="60" readonly="readonly"
                       data-bind="text: privateChatContent"></textarea>
         </form>
     </div>

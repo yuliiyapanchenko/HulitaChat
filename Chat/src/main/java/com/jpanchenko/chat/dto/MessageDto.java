@@ -15,7 +15,7 @@ public class MessageDto {
     @XmlElement
     private String message;
     @XmlElement
-    private DateTime publishedTime;
+    private Long publishedTime;
 
     public MessageDto() {
     }
@@ -24,7 +24,7 @@ public class MessageDto {
         this.id = id;
         this.idConversation = idConversation;
         this.message = message;
-        this.publishedTime = publishedTime;
+        this.publishedTime = publishedTime.getMillis();
     }
 
     public int getId() {
@@ -51,12 +51,12 @@ public class MessageDto {
         this.message = message;
     }
 
-    public DateTime getPublishedTime() {
+    public Long getPublishedTime() {
         return publishedTime;
     }
 
     public void setPublishedTime(DateTime publishedTime) {
-        this.publishedTime = publishedTime;
+        this.publishedTime = publishedTime.getMillis();
     }
 
     @Override
